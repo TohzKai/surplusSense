@@ -1,0 +1,5 @@
+model,MAE,RMSE,MAPE,SMAPE,R2,MedAE,is_baseline
+historical_average,2.4017,2.8527,57.7154,39.6530,-0.1153,,True
+previous_day,1.9800,2.6086,37.5537,33.6510,0.0679,,True
+same_weekday_last_week,2.0593,2.7160,38.7965,34.5354,-0.0108,,True
+XGBoost,0.6824,0.9144,12.6316,12.1130,0.8937,,False

@@ -1,0 +1,41 @@
+{
+  "0": {
+    "name": "Weekend-Surge, Lean Operations",
+    "description": "Low daily output but waste ratio is lowest. Strong weekend demand surge (+21%). Short shelf-life products need fast turnover. Cold-start prediction: use category benchmarks + weekend adjustment.",
+    "n_merchants": 5,
+    "centroids": {
+      "avg_daily_production": 90.3533,
+      "avg_daily_surplus": 11.1289,
+      "avg_surplus_ratio": 0.1247,
+      "surplus_std": 4.0606,
+      "median_shelf_life": 27.55,
+      "weekend_surplus_ratio": 1.2144
+    }
+  },
+  "1": {
+    "name": "High-Volume, Predictable Surplus",
+    "description": "Highest daily output and absolute surplus volume. Waste ratio is highest (17.8%). Consistent, predictable surplus pattern across weekdays. Weekend spike is minimal. Cold-start prediction: category benchmark is strong prior.",
+    "n_merchants": 5,
+    "centroids": {
+      "avg_daily_production": 140.9956,
+      "avg_daily_surplus": 24.7956,
+      "avg_surplus_ratio": 0.1778,
+      "surplus_std": 8.2256,
+      "median_shelf_life": 66.8,
+      "weekend_surplus_ratio": 1.071
+    }
+  },
+  "2": {
+    "name": "Mid-Volume, Fast-Paced Perishable",
+    "description": "Medium output and surplus. SHORTEST shelf life (16.5h) is the discriminating factor \u2014 products move fast or spoil fast. Moderate weekend surge. Cold-start prediction: shelf-life-adjusted category benchmark.",
+    "n_merchants": 5,
+    "centroids": {
+      "avg_daily_production": 119.3022,
+      "avg_daily_surplus": 17.9156,
+      "avg_surplus_ratio": 0.1509,
+      "surplus_std": 6.033,
+      "median_shelf_life": 16.45,
+      "weekend_surplus_ratio": 1.1426
+    }
+  }
+}

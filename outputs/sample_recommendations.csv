@@ -1,0 +1,33 @@
+merchant_id,merchant_type,product_category,product_name,original_price,predicted_surplus,recommended_discount_pct,discounted_price,recommended_listing_time,recommended_pickup_window,latest_pickup_time,estimated_merchant_recovery,original_value,recovery_rate_pct,safety_status,safety_flags,recommendation_explanation,tier_description
+CAF001,Café,Coffee & Beverages,Cold Brew,7.77,3.3,0.2,6.22,Immediately,1 hours,1h from now,20.51,25.64,80.0,BLOCK,['Insufficient remaining shelf life (1.7h < 2h required)'],"☕ **Cold Brew** at CAF001
+Predicted surplus: **3 units**
+Recommended discount: **20%** (Surplus: 3.3000000000000003 units, Remaining shelf life: 1.7h)
+Estimated recovery: **SGD 20.51** (vs potential loss of SGD 25.64)
+Listing time: **Immediately** - Critical shelf life (1.7h remaining) - list now
+Pickup window: **1h from now**
+
+⚠️ Safety flags: Insufficient remaining shelf life (1.7h < 2h required)","Surplus: 3.3000000000000003 units, Remaining shelf life: 1.7h"
+CAF001,Café,Pastries,Croissant,4.31,7.7,0.5,2.15,04:58,8 hours,8h from now,16.59,33.19,50.0,SAFE,[],"🥐 **Croissant** at CAF001
+Predicted surplus: **8 units**
+Recommended discount: **50%** (Surplus: 7.700000000000001 units, Standard discount applied)
+Estimated recovery: **SGD 16.59** (vs potential loss of SGD 33.19)
+Listing time: **04:58** - Optimal listing 8h before pickup deadline
+Pickup window: **8h from now**","Surplus: 7.700000000000001 units, Standard discount applied"
+CAF001,Café,Coffee & Beverages,Americano,7.57,4.4,0.5,3.79,02:58,5 hours,5h from now,16.65,33.31,50.0,SAFE,[],"☕ **Americano** at CAF001
+Predicted surplus: **4 units**
+Recommended discount: **50%** (Surplus: 4.4 units, Standard discount applied)
+Estimated recovery: **SGD 16.65** (vs potential loss of SGD 33.31)
+Listing time: **02:58** - Optimal listing 6h before pickup deadline
+Pickup window: **5h from now**","Surplus: 4.4 units, Standard discount applied"
+CAF001,Café,Salads,Chicken Grain Bowl,9.8,2.2,0.5,4.9,02:58,8 hours,8h from now,10.78,21.56,50.0,SAFE,[],"🥗 **Chicken Grain Bowl** at CAF001
+Predicted surplus: **2 units**
+Recommended discount: **50%** (Surplus: 2.2 units, Standard discount applied)
+Estimated recovery: **SGD 10.78** (vs potential loss of SGD 21.56)
+Listing time: **02:58** - Optimal listing 6h before pickup deadline
+Pickup window: **8h from now**","Surplus: 2.2 units, Standard discount applied"
+CAF001,Café,Sandwiches,Veggie Panini,7.11,5.5,0.5,3.56,01:58,7 hours,7h from now,19.55,39.11,50.0,SAFE,[],"🥪 **Veggie Panini** at CAF001
+Predicted surplus: **6 units**
+Recommended discount: **50%** (Surplus: 5.5 units, Standard discount applied)
+Estimated recovery: **SGD 19.55** (vs potential loss of SGD 39.11)
+Listing time: **01:58** - Optimal listing 5h before pickup deadline
+Pickup window: **7h from now**","Surplus: 5.5 units, Standard discount applied"

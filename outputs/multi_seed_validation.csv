@@ -1,0 +1,7 @@
+seed,rf_holdout_mae,xgb_holdout_mae,holdout_winner,rf_cv_mae,xgb_cv_mae,cv_winner
+1,0.7828,0.6493,XGBoost,1.0399,1.2352,RF
+7,0.8985,0.6818,XGBoost,1.1,1.2596,RF
+42,0.8832,0.7104,XGBoost,1.0331,1.2456,RF
+123,0.9053,0.6753,XGBoost,1.0978,1.1734,RF
+999,0.8677,0.6951,XGBoost,1.1016,1.2037,RF
+mean,0.8675,0.6824,XGBoost wins 5/5 (mean adv: 0.1851),1.0745,1.2235,RF wins 5/5

@@ -1,0 +1,8 @@
+# SurplusSense runtime dependencies
+streamlit>=1.40.0
+pandas>=2.0.0
+numpy>=1.26.0
+scikit-learn>=1.5.0
+xgboost>=2.0.0,<3.0.0
+plotly>=5.0.0
+scipy>=1.11.0
