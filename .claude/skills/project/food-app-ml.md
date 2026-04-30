@@ -40,9 +40,10 @@ SurplusSense ML pipeline patterns for surplus prediction and recommendation syst
 
 ### XGBoost Configuration (Deployed)
 
-```python
-from xgboost import XGBRegressor
+**Note:** `src/train_model.py` uses `RandomizedSearchCV` with parameter distributions (not fixed literals). Best params are extracted into a dict and used to construct the final model. The values below are the **tuned hyperparameter values** saved in `outputs/surplus_model.pkl`, not hardcoded literals in source.
 
+```python
+# Loaded from outputs/surplus_model.pkl (tuned result of RandomizedSearchCV)
 model = XGBRegressor(
     n_estimators=250,
     max_depth=13,

@@ -6,20 +6,32 @@ SurplusSense discount recommendation and revenue recovery calculation patterns.
 
 ### Tier Structure
 
-Discount is determined by surplus quantity and remaining shelf life:
+Discount is determined by surplus quantity and remaining shelf life. **Shorter remaining time = higher urgency = higher discount.**
 
-| Surplus Qty | Shelf Life     | Discount |
-| ----------- | -------------- | -------- |
-| ≤5 units    | >2h remaining  | 20%      |
-| ≤5 units    | ≤2h remaining  | 30%      |
-| ≤10 units   | >4h remaining  | 30%      |
-| ≤10 units   | 2-4h remaining | 40%      |
-| ≤10 units   | ≤2h remaining  | 50%      |
-| ≤20 units   | >4h remaining  | 40%      |
-| ≤20 units   | 2-4h remaining | 50%      |
-| ≤20 units   | ≤2h remaining  | 60%      |
-| >20 units   | >4h remaining  | 50%      |
-| >20 units   | ≤2h remaining  | 70%      |
+| Surplus Qty | Remaining Shelf Life | Discount |
+| ----------- | -------------------- | -------- |
+| ≤5 units    | ≤2h (limited time)   | 20%      |
+| ≤5 units    | ≤0h (at limit)       | 30%      |
+| ≤10 units   | ≤4h                  | 30%      |
+| ≤10 units   | ≤2h                  | 40%      |
+| ≤10 units   | ≤0h                  | 50%      |
+| ≤20 units   | ≤4h                  | 40%      |
+| ≤20 units   | ≤2h                  | 50%      |
+| ≤20 units   | ≤0h                  | 60%      |
+| >20 units   | ≤4h                  | 50%      |
+| >20 units   | ≤0h                  | 70%      |
+
+**Matching logic** (src/recommendation_engine.py DISCOUNT_TIERS):
+
+```python
+for max_qty, min_life_hours, discount in DISCOUNT_TIERS:
+    if surplus_qty <= max_qty and remaining_life <= min_life_hours:
+        return discount
+```
+
+Tiers are checked strictest-first (≤0h before ≤2h before ≤4h); first match wins.
+
+**Correction (2026-04-30):** Prior version had tier ordering inverted — showed higher discount for more remaining time. Source code implements higher urgency = higher discount (less remaining time = higher discount). Fixed to match source.
 
 ### Determining Discount
 
