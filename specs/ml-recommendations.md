@@ -1,5 +1,7 @@
 # ML Recommendations Specification
 
+> **Phase 2 — Not part of final submitted MVP.** Consumer-facing recommendation ranking is Phase 2. The submitted MVP uses a deterministic 10-tier discount recommendation engine documented in `src/recommendation_engine.py`.
+
 ## Overview
 
 Hybrid recommendation engine that ranks available deals for each consumer based on preferences, behavior, context, and social signals. Designed to maximize conversion while maintaining discovery diversity.

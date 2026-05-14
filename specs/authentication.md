@@ -1,5 +1,7 @@
 # Authentication Specification
 
+> **Phase 2 — Not part of final submitted MVP.** Multi-role authentication is Phase 2. The submitted MVP is the single-merchant decision cockpit in Streamlit.
+
 ## Overview
 
 Three user roles: merchant, consumer, admin. All share the base User table with role-based access control.

@@ -1,5 +1,7 @@
 # ML Waste Analytics Specification
 
+> **Phase 2 — Not part of final submitted MVP.** Prescriptive waste analytics is Phase 2. The submitted MVP focuses on the core surplus prediction and recommendation engine.
+
 ## Overview
 
 Provides merchants with prescriptive waste analytics that go beyond descriptive dashboards. The system detects patterns, identifies anomalies, and generates actionable recommendations to reduce waste at source.

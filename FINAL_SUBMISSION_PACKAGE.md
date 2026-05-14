@@ -164,13 +164,28 @@ specs/
 
 ## Why These Are Excluded
 
-- `.env` and `.session-notes` may contain local secrets or session-specific paths
+- `.env` and `.env.example` may contain local secrets or session-specific paths
 - `.claude/` and local settings are AI-tool configuration, not assessment evidence
 - `tests/sdk/` contains Kailash SDK template tests — not SurplusSense product tests
 - `specs/` contains historical marketplace, payment, consumer, and delivery planning that predates the final merchant-cockpit MVP scope
 - `deploy/`, `scripts/`, `mcp-configs/`, `.github/` are SDK infrastructure — not part of the MGMT655 submission
 - `.git/` is useful for version history but creates a large, noisy ZIP for eLearn submission
 - `__pycache__/` and `.pytest_cache/` are build artifacts — they make the package look uncurated
+
+---
+
+## Pre-ZIP Validation Commands
+
+```bash
+# Verify tests pass before zipping
+python -m pytest tests/unit/ -q
+
+# Verify all Python files compile
+python -m py_compile app/streamlit_app.py src/feature_engineering.py src/train_model.py src/recommendation_engine.py src/food_safety_rules.py
+
+# Check working tree is clean
+git status
+```
 
 ---
 

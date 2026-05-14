@@ -13,7 +13,7 @@ Features:
 6. Discount recommendation panel
 7. Food-safety status panel
 8. Revenue recovery simulator
-9. Mock consumer listing preview
+9. Phase 2 listing preview
 10. Exportable recommendation table
 """
 
@@ -1458,7 +1458,7 @@ def main():
     st.markdown(f'<div class="section-header" style="margin-top: 24px;">{ICONS["lightbulb"]} Recommendation</div>', unsafe_allow_html=True)
     st.markdown(rec_explanation)
 
-    # Mock Consumer Listing Preview
+    # Phase 2 Listing Preview
     st.markdown("---")
     st.markdown(f'<div class="section-header" style="margin-bottom: 16px;">{ICONS["clock"]} Phase 2 Listing Preview</div>', unsafe_allow_html=True)
     st.caption("Optional preview only. Consumer marketplace listing is a Phase 2 extension and is not part of the submitted MVP.")

@@ -1,5 +1,7 @@
 # Food Safety Specification
 
+> **Phase 2 — Not part of final submitted MVP.** Full SFA regulatory compliance documentation is Phase 2. The submitted MVP implements food safety rules in `src/food_safety_rules.py` with simplified Singapore F&B context.
+
 ## Overview
 
 Singapore-specific food safety requirements for selling surplus and near-expiry food. Compliance with SFA (Singapore Food Agency) and NEA regulations is mandatory.

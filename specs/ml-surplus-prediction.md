@@ -1,5 +1,7 @@
 # ML Surplus Prediction Specification
 
+> **Phase 2 — Not part of final submitted MVP.** The detailed ML model architecture and feature engineering spec is Phase 2 planning. The actual implemented model (XGBoost, 46 features, temporal holdout) is documented in `src/train_model.py`, `src/feature_engineering.py`, and `outputs/model_metadata.json`.
+
 ## Overview
 
 Predicts daily surplus quantities per merchant per food category to enable auto-generated listings and proactive waste reduction. The system learns from historical transaction data, weather, events, and merchant-specific patterns.

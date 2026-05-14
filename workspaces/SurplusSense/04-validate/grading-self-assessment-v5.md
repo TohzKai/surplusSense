@@ -38,7 +38,7 @@
 | 1d. Analysis & Decision Support         | 10      | 7.5       | 7.5        | ±0        | No change.                                                                                                                       | No change.                                                                                                         |
 | 1e. Presentation & Communication        | 5       | 4         | 4          | ±0        | Polished doc; no video.                                                                                                          | No change.                                                                                                         |
 | **Implementation & Code**               | **25**  | **~22.5** | **~22.5**  | **±0**    |                                                                                                                                  |                                                                                                                    |
-| 2a. Code Functionality                  | 10      | 9         | 9          | ±0        | 59/59 tests pass. No change.                                                                                                     | No change.                                                                                                         |
+| 2a. Code Functionality                  | 10      | 9         | 9          | ±0        | 63/63 tests pass. No change.                                                                                                     | No change.                                                                                                         |
 | 2b. Code Organization                   | 10      | 8.5       | 8.5        | ±0        | 6 modules, 2,156 LOC. No change.                                                                                                 | No change.                                                                                                         |
 | 2c. Reproducibility                     | 5       | 5         | 5          | ±0        | Seed=42; requirements.txt; CSV reconciliation confirmed consistent with exec report.                                             | No change.                                                                                                         |
 | **Bonus**                               | **15**  | **~6**    | **~6**     | **±0**    |                                                                                                                                  |                                                                                                                    |
@@ -153,7 +153,7 @@ These require more than 30 minutes or carry meaningful regression risk.
 
 4. **The dashboard's metric hardcodes** — The 5-seed mean MAE=0.68 and RMSE=0.91 hardcodes in streamlit_app.py are correct and consistent with the updated exec report. These were NOT the source of the Gap 2 issue and should be left alone.
 
-5. **The src/ modules** — 59/59 tests pass. These are stable. No changes needed.
+5. **The src/ modules** — 63/63 tests pass. These are stable. No changes needed.
 
 ---
 
@@ -164,7 +164,7 @@ These require more than 30 minutes or carry meaningful regression risk.
 - [ ] Verify outputs/model_comparison.csv still has XGBoost MAE 0.70, MAPE 12.6%, R² 0.89 (already confirmed)
 - [ ] Verify outputs/multi_seed_validation.csv still has XGBoost 5-seed mean MAE 0.6824 (unchanged)
 - [ ] Verify exec report table matches: XGBoost MAE=0.68 (5-seed mean), RMSE=0.91, MAPE=12.6%, R²=0.89 (already confirmed)
-- [ ] Run `python -m pytest tests/unit/ -q` — confirm 59/59 pass (already confirmed)
+- [ ] Run `python -m pytest tests/unit/ -q` — confirm 63/63 pass (already confirmed)
 - [ ] Confirm no demo video exists in repo root (already confirmed — none found)
 
 ---

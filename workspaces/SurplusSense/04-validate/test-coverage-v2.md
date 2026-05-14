@@ -24,7 +24,7 @@
 ## UNIT TEST COUNT
 
 - **Command:** `pytest --collect-only -q tests/unit/ | grep -c '::test_'`
-- **Result:** 59 tests
+- **Result:** 63 tests
 
 ## ADDITIONAL TESTS
 

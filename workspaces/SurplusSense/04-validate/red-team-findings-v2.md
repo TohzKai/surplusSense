@@ -66,8 +66,8 @@ Per journal 0010 (TRADE-OFF-course-project-vs-startup-scope.md), this project is
 ## Unit Test Verification
 
 ```
-pytest --collect-only: 59 tests collected
-pytest -q: 59 passed in 4.17s
+pytest --collect-only: 63 tests collected
+pytest -q: 63 passed in 4.17s
 ```
 
 Every src module has ≥1 test importing it:
@@ -103,7 +103,7 @@ No WARN/ERROR entries in test runner output. No recent `.log` files with issues.
 - **0 CRITICAL findings**
 - **0 HIGH findings**
 - **Spec compliance: 100%** on implemented features; dynamic pricing/PRICING.md acknowledged as Phase 2
-- **New code has new tests: PASS** (59 tests covering all src modules)
+- **New code has new tests: PASS** (63 tests covering all src modules)
 - **No mock data in production paths**
 
 Recommendation: Project is ready for submission. Only action item is adding a docstring note to `get_feature_columns()` clarifying pre/post-encoding feature count.

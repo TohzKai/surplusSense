@@ -1,5 +1,7 @@
 # Data Model Specification
 
+> **Phase 2 — Not part of final submitted MVP.** The data model covers a full marketplace (consumer, merchant, order, payment entities). The submitted MVP uses a simplified in-memory data model documented in `src/` modules.
+
 ## Entity Relationship Overview
 
 ```
