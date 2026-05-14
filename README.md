@@ -254,7 +254,7 @@ SurplusSense goes beyond a default COC-generated prototype in five ways:
 
 ```
 app/
-  streamlit_app.py          # Decision-support dashboard (1,569 lines)
+  streamlit_app.py          # Decision-support dashboard
 src/
   train_model.py            # XGBoost training + temporal 80/20 holdout
   feature_engineering.py    # 46-feature engineering pipeline with expanding-window aggregates
@@ -295,7 +295,7 @@ _SurplusSense was developed iteratively with structured validation at each stage
 
 ## ML Technique Family Declaration
 
-SurplusSense foregrounds **supervised machine learning** through XGBoost surplus prediction, combined with deterministic recommendation and food-safety rules. The individual assignment's technique family is therefore explicitly declared as supervised learning. The separate team project must be checked independently to ensure it foregrounds a different ML technique family, as required by MGMT655.
+SurplusSense foregrounds **supervised machine learning** through XGBoost surplus prediction, combined with deterministic recommendation and food-safety rules. This makes the individual assignment's technique family explicit as supervised learning; the separate team project should be evidenced separately as using a different ML technique family to satisfy the MGMT655 requirement.
 
 The supervised regression approach (XGBoost predicting surplus units as a continuous value) was chosen for temporal holdout performance, explainability, and safety-critical applicability.
 
@@ -303,20 +303,20 @@ The supervised regression approach (XGBoost predicting surplus units as a contin
 
 ## Final Assessment Evidence Map
 
-| MGMT655 Requirement           | Evidence in Repository                                                                                          |
-| ----------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| Working interactive product   | `app/streamlit_app.py` — Streamlit decision cockpit                                                             |
-| Executive report max 4 pages  | `docs/EXECUTIVE_REPORT.md` (~197 lines)                                                                         |
-| COC decision log              | `COC_DECISION_LOG.md` — 12 sections, human-judgment audit                                                       |
-| Problem worth solving         | `docs/EXECUTIVE_REPORT.md` §2; `workspaces/SurplusSense/01-analysis/04-final-positioning.md`                    |
-| ML/AI depth                   | `README.md` ML Architecture; `src/feature_engineering.py`; `models/model_metadata.json`                         |
-| Business case                 | `docs/EXECUTIVE_REPORT.md` §5; `PILOT_VALIDATION_PLAN.md`                                                       |
-| User flows                    | `workspaces/SurplusSense/03-user-flows/01-merchant-flows.md`                                                    |
-| Validation                    | `workspaces/SurplusSense/04-validate/grading-self-assessment-v6-final.md`                                       |
-| Process journal               | `workspaces/SurplusSense/journal/` — 29 entries                                                                 |
-| Execution todos               | `workspaces/SurplusSense/todos/completed/`                                                                      |
-| Not a default COC demo        | `COC_DECISION_LOG.md` §11 — human-judgment decision audit                                                       |
-| Different ML technique family | Supervised XGBoost regression; team project ML technique family confirmed separately (per MGMT655 instructions) |
+| MGMT655 Requirement           | Evidence in Repository                                                                                             |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Working interactive product   | `app/streamlit_app.py` — Streamlit decision cockpit                                                                |
+| Executive report max 4 pages  | `docs/EXECUTIVE_REPORT.md` (~197 lines)                                                                            |
+| COC decision log              | `COC_DECISION_LOG.md` — 12 sections, human-judgment audit                                                          |
+| Problem worth solving         | `docs/EXECUTIVE_REPORT.md` §2; `workspaces/SurplusSense/01-analysis/04-final-positioning.md`                       |
+| ML/AI depth                   | `README.md` ML Architecture; `src/feature_engineering.py`; `models/model_metadata.json`                            |
+| Business case                 | `docs/EXECUTIVE_REPORT.md` §5; `PILOT_VALIDATION_PLAN.md`                                                          |
+| User flows                    | `workspaces/SurplusSense/03-user-flows/01-merchant-flows.md`                                                       |
+| Validation                    | `workspaces/SurplusSense/04-validate/grading-self-assessment-v6-final.md`                                          |
+| Process journal               | `workspaces/SurplusSense/journal/` — 29 entries                                                                    |
+| Execution todos               | `workspaces/SurplusSense/todos/completed/`                                                                         |
+| Not a default COC demo        | `COC_DECISION_LOG.md` §11 — human-judgment decision audit                                                          |
+| Different ML technique family | Supervised XGBoost regression; individual assignment's technique family declared explicitly as supervised learning |
 
 ### Recommended Validation Command
 

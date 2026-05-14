@@ -1,5 +1,7 @@
 # Red Team Validation Report — SurplusSense
 
+> **Historical validation note:** This report reflects an earlier project state when SurplusSense was still framed more broadly as a food-waste marketplace and before the final merchant-side decision-cockpit repositioning. It is retained as red-team process evidence but is superseded by `grading-self-assessment-v6-final.md`, the final MVP boundary, and the final COC decision log.
+
 **Date:** 2026-05-13
 **Project:** SurplusSense Food Waste Reduction Marketplace (SMU MBA ML)
 **Previous Round:** Round 3 (2026-04-26) — PASS

@@ -150,7 +150,7 @@ The product is ready for a structured 4-week pilot — not a concept. Phase 1 is
 - **Interactive UI:** Streamlit dashboard with step-by-step decision workflow — not a static chart or notebook
 - **Decision output:** Action recommendations (DISCOUNT/DONATE/DISCARD), discount tier, safety status, recovery estimate — not just a prediction score
 - **Safety guardrails:** Five active checks with BLOCK/CAUTION/SAFE gating — not an implicit disclaimer
-- **Reproducible pipeline:** RANDOM_SEED=42, documented training pipeline, 59 unit tests passing
+- **Reproducible pipeline:** RANDOM_SEED=42, documented training pipeline, 63 unit tests passing
 - **Honest limitations:** Synthetic data only, advisory safety rules, MVP scope — all explicitly stated
 
 **Visual Suggestion:**

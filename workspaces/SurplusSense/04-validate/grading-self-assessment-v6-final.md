@@ -78,22 +78,22 @@ All final metrics are sourced from `outputs/model_results.csv` (corrected to tem
 
 ## Final Assessment Against MGMT655 Requirements
 
-| Requirement                                     | Evidence                                                                                                                       | Status                      |
-| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | --------------------------- |
-| Working interactive product                     | `app/streamlit_app.py` — Streamlit decision cockpit                                                                            | Met                         |
-| Executive report max 4 pages                    | `docs/EXECUTIVE_REPORT.md` (~197 lines)                                                                                        | Met (verify in PDF)         |
-| COC decision log                                | `COC_DECISION_LOG.md` — 12 sections, decision audit, human judgment evidence                                                   | Met                         |
-| Specific customer problem                       | Merchant-side F&B surplus decision                                                                                             | Met                         |
-| Decision-support value                          | prediction + action + safety + recovery value                                                                                  | Met                         |
-| Mature beyond prototype                         | additional data/model/UX/business-case layers                                                                                  | Met                         |
-| Not a default COC demo                          | documented rejected defaults; human-judgment decision audit                                                                    | Met                         |
-| Different ML technique family from team project | Supervised XGBoost regression; team project uses different ML technique family (confirmed separately per MGMT655 instructions) | Met (see declaration below) |
+| Requirement                                     | Evidence                                                                                                           | Status                      |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ | --------------------------- |
+| Working interactive product                     | `app/streamlit_app.py` — Streamlit decision cockpit                                                                | Met                         |
+| Executive report max 4 pages                    | `docs/EXECUTIVE_REPORT.md` (~197 lines)                                                                            | Met (verify in PDF)         |
+| COC decision log                                | `COC_DECISION_LOG.md` — 12 sections, decision audit, human judgment evidence                                       | Met                         |
+| Specific customer problem                       | Merchant-side F&B surplus decision                                                                                 | Met                         |
+| Decision-support value                          | prediction + action + safety + recovery value                                                                      | Met                         |
+| Mature beyond prototype                         | additional data/model/UX/business-case layers                                                                      | Met                         |
+| Not a default COC demo                          | documented rejected defaults; human-judgment decision audit                                                        | Met                         |
+| Different ML technique family from team project | Supervised XGBoost regression; individual assignment's technique family declared explicitly as supervised learning | Met (see declaration below) |
 
 ---
 
 ## ML Technique Family Declaration
 
-SurplusSense foregrounds **supervised machine learning** through XGBoost surplus prediction, combined with deterministic recommendation and food-safety rules. The individual assignment's technique family is therefore explicitly declared as supervised learning. The separate team project must be checked independently to ensure it foregrounds a different ML technique family, as required by MGMT655.
+SurplusSense foregrounds **supervised machine learning** through XGBoost surplus prediction, combined with deterministic recommendation and food-safety rules. This makes the individual assignment's technique family explicit as supervised learning; the separate team project should be evidenced separately as using a different ML technique family to satisfy the MGMT655 requirement.
 
 ---
 

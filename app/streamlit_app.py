@@ -1460,7 +1460,8 @@ def main():
 
     # Mock Consumer Listing Preview
     st.markdown("---")
-    st.markdown(f'<div class="section-header" style="margin-bottom: 16px;">{ICONS["clock"]} How Consumers Would See This Listing</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="section-header" style="margin-bottom: 16px;">{ICONS["clock"]} Phase 2 Listing Preview</div>', unsafe_allow_html=True)
+    st.caption("Optional preview only. Consumer marketplace listing is a Phase 2 extension and is not part of the submitted MVP.")
 
     preview_col1, preview_col2 = st.columns([1, 2])
 

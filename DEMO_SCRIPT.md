@@ -81,7 +81,7 @@ The "Why this recommendation?" box explains in plain language:
 
 **Step 7 — Show the consumer preview**
 
-The "How Consumers Would See This Listing" card shows the rendered listing as a consumer would see it — discount badge, pickup window, storage type, freshness.
+The "Phase 2 Listing Preview" card shows a preview of how the listing would appear to consumers — discount badge, pickup window, storage type, freshness. This is a Phase 2 extension preview; the submitted MVP is the merchant decision cockpit only.
 
 **Step 8 — Adjust the inputs**
 
