@@ -1,5 +1,7 @@
 # Specs Index
 
+> **Note:** The `specs/` directory contains early-stage product planning artifacts developed during the initial phases of this project. These files were used to explore the scope of a potential food surplus marketplace — including consumer and merchant UX flows, payment flows, and full marketplace architecture. They represent exploratory design thinking, not the delivered product. The actual submission deliverables are listed in the README.
+
 | File                     | Domain      | Description                                                     |
 | ------------------------ | ----------- | --------------------------------------------------------------- |
 | data-model.md            | Data        | All entities, relationships, constraints, indexes               |

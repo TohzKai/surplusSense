@@ -1,5 +1,57 @@
 # User Flows: Merchant Journey
 
+## Merchant User Flow — Final Submitted MVP
+
+The final submitted MVP covers one user flow:
+
+**Merchant enters item details → sees a recommended action → acts on it.**
+
+1. Merchant opens SurplusSense dashboard
+2. Enters merchant context: type, category, storage, preparation time
+3. Enters item details: original price, shelf life, current holding time
+4. System outputs: predicted surplus units, recommended action, discount tier, food-safety status, recovery estimate
+5. Merchant reviews and acts on the recommendation
+
+**All other flows (M1 through M7 below) are Phase 2 — not part of the submitted MVP. They document earlier marketplace exploration and are retained as process evidence.**
+
+---
+
+## Final Merchant Decision Flow
+
+## Primary User
+
+Outlet manager or staff member at a bakery, café, or prepared-food outlet.
+
+## Decision Moment
+
+Late-day surplus decision, before products lose value or become unsafe.
+
+## Flow
+
+1. Merchant enters outlet and item context.
+2. Merchant enters quantity, price, time of day, shelf-life, and relevant operating conditions.
+3. SurplusSense predicts expected surplus units.
+4. System applies food-safety gate.
+5. System recommends one action:
+   - hold
+   - monitor
+   - discount
+   - deep discount
+   - donate
+   - discard
+6. System estimates recovery value.
+7. System explains recommendation in business language.
+8. Merchant accepts or overrides recommendation.
+9. Override reason is captured for pilot learning.
+
+## Why This Is Decision Support
+
+The merchant does not receive only a forecast. The merchant receives an action recommendation constrained by safety and linked to recovery value. This makes the product a decision-support cockpit rather than a generic ML dashboard.
+
+---
+
+## Phase 2 Merchant Marketplace Flow — Not Part of Final Submitted MVP
+
 ## M1: Merchant Onboarding
 
 ```
@@ -23,7 +75,7 @@ Landing page → Sign up (email/password or Google) → Business details form
 
 ---
 
-## M2: Daily Surplus Listing (Core Flow)
+## M2: Daily Surplus Listing (Phase 2 — Marketplace Flow)
 
 ```
 Morning notification → "Predicted surplus for today" → Review prediction
@@ -119,7 +171,9 @@ Dashboard → Analytics tab → Select time period
 
 ---
 
-## M5: Pricing Management
+## M5: Pricing Management (Phase 2)
+
+> **Not in submitted MVP.** Pricing management is Phase 2.
 
 ```
 Dashboard → Pricing settings → Set defaults per category
@@ -137,7 +191,9 @@ Dashboard → Pricing settings → Set defaults per category
 
 ---
 
-## M6: Order Management
+## M6: Order Management (Phase 2)
+
+> **Not in submitted MVP.** Order management is Phase 2 — no consumer marketplace, payments, or QR pickup in the MVP.
 
 ```
 Notification: "New order!" → View order details → Prepare order
@@ -154,7 +210,9 @@ Notification: "New order!" → View order details → Prepare order
 
 ---
 
-## M7: Merchant Settings and Profile
+## M7: Merchant Settings and Profile (Phase 2)
+
+> **Not in submitted MVP.** Settings and profile management is Phase 2.
 
 ```
 Dashboard → Settings → Edit business hours / location / categories

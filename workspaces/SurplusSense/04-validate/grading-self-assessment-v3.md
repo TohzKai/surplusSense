@@ -1,3 +1,5 @@
+> **Superseded by grading-self-assessment-v6-final.md. See that file for the current assessment.**
+
 # Grading Self-Assessment — SurplusSense (MGMT 655) — v3
 
 **Date:** 2026-04-26

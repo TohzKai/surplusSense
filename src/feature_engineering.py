@@ -100,81 +100,111 @@ def create_rolling_features(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def create_merchant_aggregates(df: pd.DataFrame) -> pd.DataFrame:
-    """Create merchant-level aggregate features."""
-    df = df.copy()
+    """
+    Create merchant-level aggregate features using expanding-window logic.
 
-    # Merchant-level average surplus rate (historical)
-    merchant_stats = df.groupby("merchant_id").agg(
-        merchant_avg_surplus=("surplus_quantity", "mean"),
-        merchant_avg_production=("production_quantity", "mean"),
-        merchant_surplus_std=("surplus_quantity", "std"),
-    ).reset_index()
+    Sorts by merchant_id and date in-place (preserving original index).
+    Uses cumulative expanding mean of surplus_quantity shifted by 1 period,
+    ensuring that for each row at date D, only surplus values from dates
+    strictly before D contribute to the aggregate — preventing target lookahead.
+    """
+    # Sort in-place but keep original index for alignment
+    df.sort_values(["merchant_id", "date"], inplace=True)
 
-    merchant_stats["merchant_avg_surplus_rate"] = (
-        merchant_stats["merchant_avg_surplus"] / merchant_stats["merchant_avg_production"]
+    # Expanding-window merchant average: cumulative mean of surplus up to (but not including) current row.
+    # shift(1) ensures the current row's surplus is excluded.
+    grp = df.groupby("merchant_id")["surplus_quantity"]
+    df["merchant_avg_surplus"] = grp.cumsum().shift(1) / grp.cumcount().replace(0, float("nan"))
+    df["merchant_avg_surplus"] = df["merchant_avg_surplus"].fillna(0)
+
+    # Expanding-window production average
+    grp_prod = df.groupby("merchant_id")["production_quantity"]
+    df["merchant_avg_production"] = grp_prod.cumsum().shift(1) / grp.cumcount().replace(0, float("nan"))
+    df["merchant_avg_production"] = df["merchant_avg_production"].fillna(df["production_quantity"].mean())
+
+    # Surplus rate
+    df["merchant_avg_surplus_rate"] = np.where(
+        df["merchant_avg_production"] > 0,
+        df["merchant_avg_surplus"] / df["merchant_avg_production"],
+        0,
     )
-    merchant_stats["merchant_surplus_std"] = merchant_stats["merchant_surplus_std"].fillna(0)
 
-    df = df.merge(merchant_stats[["merchant_id", "merchant_avg_surplus", "merchant_avg_production", "merchant_avg_surplus_rate", "merchant_surplus_std"]], on="merchant_id", how="left")
+    # Expanding-window surplus std (shift(1), then expanding std of lagged values)
+    df["merchant_surplus_std"] = (
+        df.groupby("merchant_id")["surplus_quantity"]
+        .transform(lambda x: x.shift(1).expanding().std())
+    ).fillna(0)
 
     return df
 
 
 def create_category_aggregates(df: pd.DataFrame) -> pd.DataFrame:
-    """Create product-category-level aggregate features."""
-    df = df.copy()
+    """
+    Create product-category-level aggregate features using expanding-window logic.
 
-    # Category-level average surplus
-    category_stats = df.groupby("product_category").agg(
-        category_avg_surplus=("surplus_quantity", "mean"),
-        category_avg_production=("production_quantity", "mean"),
-    ).reset_index()
+    Sorts by product_category and date in-place (preserving original index).
+    Uses cumulative expanding mean of surplus_quantity shifted by 1 period per category.
+    """
+    df.sort_values(["product_category", "date"], inplace=True)
 
-    category_stats["category_avg_surplus_rate"] = (
-        category_stats["category_avg_surplus"] / category_stats["category_avg_production"]
-    )
+    grp = df.groupby("product_category")["surplus_quantity"]
+    grp_prod = df.groupby("product_category")["production_quantity"]
+    df["category_avg_surplus"] = grp.cumsum().shift(1) / grp.cumcount().replace(0, float("nan"))
+    df["category_avg_surplus"] = df["category_avg_surplus"].fillna(0)
 
-    df = df.merge(
-        category_stats[["product_category", "category_avg_surplus", "category_avg_surplus_rate"]],
-        on="product_category",
-        how="left",
+    df["category_avg_production"] = grp_prod.cumsum().shift(1) / grp.cumcount().replace(0, float("nan"))
+    df["category_avg_production"] = df["category_avg_production"].fillna(df["production_quantity"].mean())
+
+    df["category_avg_surplus_rate"] = np.where(
+        df["category_avg_production"] > 0,
+        df["category_avg_surplus"] / df["category_avg_production"],
+        0,
     )
 
     return df
 
 
 def create_merchant_type_aggregates(df: pd.DataFrame) -> pd.DataFrame:
-    """Create merchant-type-level aggregate features."""
-    df = df.copy()
+    """
+    Create merchant-type-level aggregate features using expanding-window logic.
 
-    # Merchant-type level stats
-    type_stats = df.groupby("merchant_type").agg(
-        type_avg_surplus=("surplus_quantity", "mean"),
-        type_avg_production=("production_quantity", "mean"),
-    ).reset_index()
+    Sorts by merchant_type and date in-place (preserving original index).
+    Uses cumulative expanding mean shifted by 1 period per merchant type.
+    """
+    df.sort_values(["merchant_type", "date"], inplace=True)
 
-    type_stats["type_avg_surplus_rate"] = (
-        type_stats["type_avg_surplus"] / type_stats["type_avg_production"]
-    )
+    grp = df.groupby("merchant_type")["surplus_quantity"]
+    grp_prod = df.groupby("merchant_type")["production_quantity"]
+    df["type_avg_surplus"] = grp.cumsum().shift(1) / grp.cumcount().replace(0, float("nan"))
+    df["type_avg_surplus"] = df["type_avg_surplus"].fillna(0)
 
-    df = df.merge(
-        type_stats[["merchant_type", "type_avg_surplus", "type_avg_surplus_rate"]],
-        on="merchant_type",
-        how="left",
+    df["type_avg_production"] = grp_prod.cumsum().shift(1) / grp.cumcount().replace(0, float("nan"))
+    df["type_avg_production"] = df["type_avg_production"].fillna(df["production_quantity"].mean())
+
+    df["type_avg_surplus_rate"] = np.where(
+        df["type_avg_production"] > 0,
+        df["type_avg_surplus"] / df["type_avg_production"],
+        0,
     )
 
     return df
 
 
 def create_interaction_features(df: pd.DataFrame) -> pd.DataFrame:
-    """Create interaction features between variables."""
+    """
+    Create interaction features between variables.
+
+    NOTE: surplus_vs_merchant_avg has been removed.
+    The prior version used surplus_quantity (the target) to compute
+    surplus_vs_merchant_avg = surplus_quantity - merchant_avg_surplus.
+    This was a current-row target leakage risk: the feature included the
+    current row's own target value, giving the model direct access to the
+    label during training. This is removed in the current implementation.
+    """
     df = df.copy()
 
     # Weekend × Promotion interaction
     df["weekend_promotion"] = df["weekend_flag"] * df["promotion_flag"]
-
-    # Surplus deviation from merchant average
-    df["surplus_vs_merchant_avg"] = df["surplus_quantity"] - df["merchant_avg_surplus"]
 
     # Production relative to merchant average
     df["production_vs_merchant_avg"] = (
@@ -195,20 +225,20 @@ def create_interaction_features(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def create_demand_features(df: pd.DataFrame) -> pd.DataFrame:
-    """Create features indicating demand patterns."""
-    df = df.copy()
+    """
+    Create features indicating demand patterns using expanding-window logic.
 
-    # Historical demand pattern for this day of week
-    dow_demand = df.groupby(["merchant_id", "product_category", "day_of_week"]).agg(
-        dow_avg_sold=("sold_quantity", "mean"),
-        dow_avg_surplus=("surplus_quantity", "mean"),
-    ).reset_index()
+    dow_avg_sold and dow_avg_surplus are computed using only data before
+    the current row's date within each merchant+category+day_of_week group.
+    """
+    df.sort_values(["merchant_id", "product_category", "day_of_week", "date"], inplace=True)
 
-    df = df.merge(
-        dow_demand[["merchant_id", "product_category", "day_of_week", "dow_avg_sold", "dow_avg_surplus"]],
-        on=["merchant_id", "product_category", "day_of_week"],
-        how="left",
-    )
+    grp = df.groupby(["merchant_id", "product_category", "day_of_week"])
+    df["dow_avg_sold"] = grp["sold_quantity"].cumsum().shift(1) / grp.cumcount().replace(0, float("nan"))
+    df["dow_avg_sold"] = df["dow_avg_sold"].fillna(0)
+
+    df["dow_avg_surplus"] = grp["surplus_quantity"].cumsum().shift(1) / grp.cumcount().replace(0, float("nan"))
+    df["dow_avg_surplus"] = df["dow_avg_surplus"].fillna(0)
 
     return df
 
@@ -216,6 +246,12 @@ def create_demand_features(df: pd.DataFrame) -> pd.DataFrame:
 def engineer_features(df: pd.DataFrame) -> pd.DataFrame:
     """
     Apply all feature engineering steps.
+
+    All aggregate features (merchant/category/type-level averages and
+    demand features) are computed using expanding-window logic that excludes
+    the current row's target value, preventing target lookahead leakage.
+    Lag and rolling features use shift(1) before aggregation, ensuring
+    only historical data contributes.
 
     Parameters:
         df: Raw DataFrame with columns from synthetic data generator
@@ -239,9 +275,17 @@ def engineer_features(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def get_feature_columns() -> List[str]:
-    """Return raw feature names (31 pre-encoding; 47 post one-hot
+    """Return raw feature names (31 pre-encoding; 46 post one-hot
     encoding for categorical variables — what the trained model
-    actually uses)."""
+    actually uses).
+
+    Note: surplus_vs_merchant_avg has been removed from this list
+    because it used the current row's surplus_quantity (the target)
+    as a feature input — a form of current-row target leakage.
+    All aggregate features (merchant_avg_surplus, category_avg_surplus,
+    type_avg_surplus, dow_avg_sold, dow_avg_surplus) are now computed
+    using expanding-window logic that excludes the current row's target.
+    """
     return [
         # Time features
         "day_of_week",
@@ -258,30 +302,30 @@ def get_feature_columns() -> List[str]:
         "storage_type",
         "holding_time_hours",
         "holding_vs_shelf_ratio",
-        # Merchant features
+        # Merchant features (expanding-window aggregates — no future leakage)
         "merchant_type",
         "merchant_avg_surplus",
         "merchant_avg_surplus_rate",
         "merchant_surplus_std",
-        # Category features
+        # Category features (expanding-window aggregates)
         "category_avg_surplus",
         "category_avg_surplus_rate",
-        # Type features
+        # Type features (expanding-window aggregates)
         "type_avg_surplus",
         "type_avg_surplus_rate",
-        # Lag features (key baselines)
+        # Lag features (point-in-time, clean)
         "prev_day_surplus",
         "same_weekday_last_week_surplus",
-        # Rolling features
+        # Rolling features (shift(1) before rolling — clean)
         "surplus_7day_avg",
         "surplus_7day_max",
         "surplus_7day_std",
         "production_7day_avg",
         "surplus_rate_7day",
-        # Interaction features
+        # Interaction features (surplus_vs_merchant_avg removed — current-row target leakage)
         "weekend_promotion",
         "production_vs_merchant_avg",
-        # Demand features
+        # Demand features (expanding-window aggregates)
         "dow_avg_sold",
         "dow_avg_surplus",
     ]

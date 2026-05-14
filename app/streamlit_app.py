@@ -809,6 +809,39 @@ def main():
     <div class="app-header-separator"></div>
     """, unsafe_allow_html=True)
 
+    # ===== DECISION WORKFLOW HEADER =====
+    st.markdown("""
+    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 24px; margin: 16px 0 24px 0;">
+        <div style="font-size: 13px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;">Decision Workflow</div>
+        <div style="display: flex; gap: 0; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="background: var(--accent); color: #0B0F0E; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0;">1</div>
+                <div style="font-size: 13px; color: var(--text-primary); font-weight: 500;">Enter Context</div>
+            </div>
+            <div style="flex: 1; height: 2px; background: var(--border); margin: 0 12px;"></div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="background: var(--accent); color: #0B0F0E; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0;">2</div>
+                <div style="font-size: 13px; color: var(--text-primary); font-weight: 500;">Predict</div>
+            </div>
+            <div style="flex: 1; height: 2px; background: var(--border); margin: 0 12px;"></div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="background: var(--accent); color: #0B0F0E; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0;">3</div>
+                <div style="font-size: 13px; color: var(--text-primary); font-weight: 500;">Recommend</div>
+            </div>
+            <div style="flex: 1; height: 2px; background: var(--border); margin: 0 12px;"></div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="background: var(--accent); color: #0B0F0E; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0;">4</div>
+                <div style="font-size: 13px; color: var(--text-primary); font-weight: 500;">Screen Safety</div>
+            </div>
+            <div style="flex: 1; height: 2px; background: var(--border); margin: 0 12px;"></div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="background: var(--accent); color: #0B0F0E; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0;">5</div>
+                <div style="font-size: 13px; color: var(--text-primary); font-weight: 500;">Estimate Recovery</div>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
     # Load data
     df = load_data()
     model_metadata = load_model()
@@ -845,8 +878,9 @@ def main():
 
         st.markdown('<p class="sidebar-section-label" style="margin-top: 8px;">Time</p>', unsafe_allow_html=True)
         _time_options = [f"{h:02d}:00" for h in range(6, 23)]  # 06:00 to 22:00
-        # Explicitly set session state before widget so sidebar selectbox respects the default
-        st.session_state["time_selector"] = "10:00"
+        # Only set default on first load; preserve user selection on reruns
+        if "time_selector" not in st.session_state:
+            st.session_state["time_selector"] = "10:00"
         current_time_str = st.selectbox(
             "Time",
             _time_options,
@@ -1267,6 +1301,72 @@ def main():
         </div>
     </div>
     ''', unsafe_allow_html=True)
+
+    # ===== WHY THIS RECOMMENDATION? =====
+    # Build action label based on discount tier
+    discount_pct = recommendation['recommended_discount_pct']
+    if discount_pct >= 0.6:
+        action_label = "DEEP DISCOUNT"
+        action_color = "#EF4444"
+    elif discount_pct >= 0.4:
+        action_label = "DISCOUNT"
+        action_color = "#F59E0B"
+    elif discount_pct >= 0.2:
+        action_label = "MONITOR"
+        action_color = "#3B82F6"
+    else:
+        action_label = "HOLD"
+        action_color = "#10B981"
+
+    surplus_qty = recommendation['predicted_surplus']
+    shelf_life = record['shelf_life_hours']
+    holding = record['holding_time_hours']
+    remaining = shelf_life - holding
+    recovery = recommendation['estimated_merchant_recovery']
+    original = recommendation['original_value']
+
+    st.markdown(f"""
+    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; margin: 16px 0;">
+        <div style="display: flex; align-items: flex-start; gap: 16px;">
+            <div style="background: {action_color}22; border: 1px solid {action_color}; border-radius: 8px; padding: 8px 16px; flex-shrink: 0;">
+                <div style="font-size: 11px; font-weight: 700; color: {action_color}; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px;">Recommended Action</div>
+                <div style="font-size: 18px; font-weight: 700; color: {action_color};">{action_label}</div>
+            </div>
+            <div style="flex: 1;">
+                <div style="font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px;">Why this recommendation?</div>
+                <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
+                    <strong>{surplus_qty:.0f} units</strong> predicted surplus for <strong>{selected_category}</strong> at <strong>{merchant_id}</strong> ·
+                    <strong>{remaining:.0f}h remaining</strong> shelf life ({holding:.0f}h already held) ·
+                    <strong>{discount_pct*100:.0f}% discount</strong> recommended ·
+                    Estimated recovery: <strong>SGD {recovery:.2f}</strong> vs potential loss of SGD {original:.2f}
+                </div>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ===== SAFETY CONFIDENCE NOTE =====
+    if safety_result.status == "SAFE":
+        st.markdown("""
+        <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 12px 16px; margin: 0 0 16px 0;">
+            <div style="font-size: 12px; color: #10B981; font-weight: 600; margin-bottom: 4px;">✓ Safety Confidence: Item passed all 5 safety checks</div>
+            <div style="font-size: 11px; color: var(--text-tertiary);">Food safety screening is advisory. Merchant assumes responsibility for compliance with SFA regulations and in-store handling procedures.</div>
+        </div>
+        """, unsafe_allow_html=True)
+    elif safety_result.status == "CAUTION":
+        st.markdown("""
+        <div style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 8px; padding: 12px 16px; margin: 0 0 16px 0;">
+            <div style="font-size: 12px; color: #F59E0B; font-weight: 600; margin-bottom: 4px;">⚠ Safety Confidence: Caution advised — review warnings before listing</div>
+            <div style="font-size: 11px; color: var(--text-tertiary);">Food safety screening is advisory. Merchant assumes responsibility for compliance with SFA regulations and in-store handling procedures.</div>
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        st.markdown("""
+        <div style="background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; padding: 12px 16px; margin: 0 0 16px 0;">
+            <div style="font-size: 12px; color: #EF4444; font-weight: 600; margin-bottom: 4px;">✕ Safety Confidence: Item blocked — cannot be recommended for listing</div>
+            <div style="font-size: 11px; color: var(--text-tertiary);">Food safety screening is advisory. Merchant assumes responsibility for compliance with SFA regulations and in-store handling procedures.</div>
+        </div>
+        """, unsafe_allow_html=True)
 
     # Three-column grid: Food Safety | Listing Schedule | Product Details
     col_safety, col_schedule, col_details = st.columns(3)

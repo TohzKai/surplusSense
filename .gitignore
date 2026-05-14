@@ -66,3 +66,9 @@ secrets/
 **/scripts/data/
 **/scripts/outputs/
 **/scripts/*.log
+
+# Claude Code local settings (not for commit)
+.claude/settings.local.json
+
+# macOS
+__MACOSX/

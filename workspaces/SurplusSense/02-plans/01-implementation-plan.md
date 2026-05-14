@@ -1,12 +1,64 @@
 # Implementation Plan
 
-## Overview
+## Final Submitted MVP — Implementation Scope
 
-The implementation is structured into 3 phases, progressing from a functional marketplace to ML-enhanced features. Each phase delivers a working, demonstrable product.
+The final submitted MVP is the **merchant decision-support cockpit**: a Streamlit dashboard that takes merchant context (merchant type, category, storage, preparation time) and item details (price, shelf life, holding time) and outputs a recommended action (HOLD / MONITOR / DISCOUNT / DEEP DISCOUNT / DONATE / DISCARD) with discount tier, food-safety status, and revenue recovery estimate.
+
+**What the MVP includes:**
+
+- XGBoost surplus prediction (46 features, temporal 80/20 holdout validation)
+- 10-tier discount recommendation engine with cold-start category benchmarks
+- 5-check food-safety gate (BLOCK / CAUTION / SAFE)
+- Recovery-value estimation
+- 63 passing unit tests
+- Reproducible pipeline (`RANDOM_SEED=42`)
+
+**What is NOT in the MVP (Phase 2):**
+
+- Consumer marketplace, consumer app, payments, QR pickup
+- POS / inventory system integration
+- Multi-tenant infrastructure
+- Real merchant data (synthetic data only)
+
+> **Scope note:** Earlier phases of this plan explored a broader two-sided marketplace. The final individual assignment scope is the merchant decision-support cockpit (Phase 1 merchant layer only). Consumer marketplace, payments, delivery, and POS integration are Phase 2. See `workspaces/SurplusSense/01-analysis/04-final-positioning.md`.
 
 ---
 
-## Phase 1: Core Marketplace (Weeks 1-3)
+## Final Submitted MVP Implementation Plan
+
+The final submitted product is intentionally narrow and decision-focused.
+
+## Implemented Core Components
+
+| Component                  | Purpose                                                    | Evidence                                           |
+| -------------------------- | ---------------------------------------------------------- | -------------------------------------------------- |
+| Streamlit merchant cockpit | Gives the merchant an interactive decision interface       | `app/streamlit_app.py`                             |
+| XGBoost surplus prediction | Predicts expected surplus units                            | `src/train_model.py`, `models/model_metadata.json` |
+| Temporal validation        | Evaluates model using future-like holdout                  | `src/train_model.py`; `outputs/model_results.csv`  |
+| Leakage-aware features     | Prevents future data from entering prediction              | `src/feature_engineering.py` with `shift(1)`       |
+| Recommendation engine      | Converts prediction into merchant action                   | `src/recommendation_engine.py`                     |
+| Food-safety gate           | Prevents unsafe commercial recommendations                 | `src/food_safety_rules.py`                         |
+| Recovery-value estimate    | Links ML output to business value                          | `src/recommendation_engine.py`; executive report   |
+| Explanation layer          | Makes recommendation understandable to non-technical users | `app/streamlit_app.py`                             |
+| Pilot validation plan      | Defines how merchant value would be tested                 | `PILOT_VALIDATION_PLAN.md`                         |
+
+## Scope-Control Decision
+
+I deliberately did not implement consumer marketplace, payments, QR pickup, delivery logistics, POS integration, or a consumer mobile app in the final MVP. Those items increase product breadth but do not strengthen the core ML decision-support evidence required by MGMT655.
+
+This scope-control decision demonstrates human judgment: I prioritised a complete, testable, explainable decision-support product over a broader but less mature marketplace prototype.
+
+---
+
+## Historical / Phase 2 Marketplace Exploration
+
+The sections below document the earlier marketplace concept. They are retained as process evidence and are not part of the submitted MVP.
+
+### Phase 1: Core Marketplace (Weeks 1-3)
+
+### Objective
+
+Build the two-sided marketplace — merchants can list surplus food, consumers can browse and purchase, with basic payment and pickup flow.
 
 ### Objective
 

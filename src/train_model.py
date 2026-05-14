@@ -19,7 +19,8 @@ import pandas as pd
 import numpy as np
 import pickle
 import os
-from typing import Dict, Any, Tuple, Optional
+import sys
+from typing import Dict, Any, Tuple
 from datetime import datetime
 
 from sklearn.ensemble import RandomForestRegressor
@@ -28,8 +29,6 @@ from sklearn.preprocessing import LabelEncoder
 from scipy.stats import randint, uniform
 from xgboost import XGBRegressor
 
-import sys
-import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.feature_engineering import (
@@ -522,10 +521,20 @@ def train_model(
     xgb_results = run_xgboost_search(X, y, n_iter=30, n_splits=5, random_state=random_state)
     xgb_best_params = xgb_results["best_params"]
 
-    # Split data
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=test_size, random_state=random_state
-    )
+    # Split data — temporal split (last 20% of sorted dates as holdout)
+    # This is more realistic for time-series surplus prediction than random split
+    df_sorted = df.loc[valid_indices].sort_values("date")
+    split_idx = int(len(df_sorted) * (1 - test_size))
+    train_dates = df_sorted.iloc[:split_idx]["date"]
+    test_dates = df_sorted.iloc[split_idx:]["date"]
+
+    train_mask = X.index.isin(X.index[X.index.isin(df[df["date"].isin(train_dates)].index)])
+    test_mask = X.index.isin(X.index[X.index.isin(df[df["date"].isin(test_dates)].index)])
+
+    X_train = X[train_mask]
+    X_test = X[test_mask]
+    y_train = y[train_mask]
+    y_test = y[test_mask]
 
     # Train and compare RF vs XGBoost
     comparison = train_and_compare_models(

@@ -1,48 +1,48 @@
 feature,importance
-dow_avg_surplus,0.4497233
-production_vs_merchant_avg,0.19103694
-merchant_avg_surplus,0.13943177
-weekend_promotion,0.03585169
-weekend_flag,0.018896876
-surplus_7day_max,0.010704101
-dow_avg_sold,0.00921256
-product_category_Pastries,0.008711239
-category_avg_surplus,0.007512445
-product_category_Salads,0.0068015736
-prev_day_surplus,0.0067861383
-storage_type_Refrigerated,0.0066613527
-surplus_rate_7day,0.006372877
-same_weekday_last_week_surplus,0.006040765
-merchant_avg_surplus_rate,0.006032809
-category_avg_surplus_rate,0.0059913364
-storage_type_Frozen,0.005990272
-storage_type_Ambient,0.0059200604
-surplus_7day_avg,0.0055318475
-production_7day_avg,0.0053719804
-surplus_7day_std,0.0053091776
-day_of_week_sin,0.0051221475
-holding_vs_shelf_ratio,0.0046793097
-shelf_life_hours,0.0044624307
-product_category_Tarts,0.0044401255
-holding_time_hours,0.0041466826
-original_price,0.0040039066
-product_category_Cakes,0.0038575134
-preparation_time,0.0037801685
-merchant_surplus_std,0.003531222
-product_category_Noodle Dishes,0.0034561967
-day_of_week_cos,0.0033421626
-day_of_week,0.0026055381
-product_category_Bread,0.0024104684
-month,0.0023237139
-product_category_Desserts,0.0015228138
-merchant_type_Small F&B,0.0010445624
-product_category_Soup & Sides,0.00066336227
-product_category_Rice Dishes,0.00044977193
-product_category_Sandwiches,0.00017375514
-product_category_Bento Sets,9.2961935e-05
-type_avg_surplus,0.0
-type_avg_surplus_rate,0.0
+merchant_type_Café,0.7693747
+type_avg_surplus_rate,0.06291866
+production_vs_merchant_avg,0.040111635
+merchant_avg_surplus_rate,0.030098822
+merchant_avg_surplus,0.026800495
+merchant_surplus_std,0.020060647
+day_of_week,0.0052289683
+weekend_promotion,0.004657389
+type_avg_surplus,0.0033144716
+surplus_7day_avg,0.003138869
+product_category_Tarts,0.00258524
+day_of_week_sin,0.0021582867
+surplus_7day_max,0.0019582799
+prev_day_surplus,0.001417283
+surplus_rate_7day,0.001337538
+category_avg_surplus,0.0013198641
+storage_type_Ambient,0.0012660985
+dow_avg_surplus,0.0012565734
+day_of_week_cos,0.0012467288
+shelf_life_hours,0.0011719338
+product_category_Rice Dishes,0.0011405015
+same_weekday_last_week_surplus,0.0011298092
+preparation_time,0.0011023822
+dow_avg_sold,0.0010920129
+product_category_Bread,0.0010445411
+month,0.0010378114
+production_7day_avg,0.0010359938
+holding_vs_shelf_ratio,0.0010059627
+holding_time_hours,0.00093248417
+category_avg_surplus_rate,0.00090732315
+surplus_7day_std,0.0008989948
+original_price,0.0008869589
+product_category_Cakes,0.0008796551
+product_category_Pastries,0.0008002235
+product_category_Soup & Sides,0.00079490186
+storage_type_Refrigerated,0.0007377113
+product_category_Bento Sets,0.0006434553
+product_category_Desserts,0.0006278069
+product_category_Noodle Dishes,0.0005721804
+product_category_Sandwiches,0.00044438476
+storage_type_Frozen,0.0004313175
+product_category_Coffee & Beverages,0.00043111196
+weekend_flag,0.0
+product_category_Salads,0.0
 product_category_Cookies,0.0
-product_category_Coffee & Beverages,0.0
-merchant_type_Café,0.0
 merchant_type_Bakery,0.0
+merchant_type_Small F&B,0.0

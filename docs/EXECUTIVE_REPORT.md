@@ -1,128 +1,197 @@
-# SurplusSense: AI Decision Cockpit for F&B Merchants
+# Executive Report: SurplusSense Decision Support
 
-**SMU MBA Machine Learning — Individual Project**
-**April 2026**
-
----
-
-## 1. The Problem
-
-Singapore generated 755,000 tonnes of food waste in 2023, rising to 784,000 tonnes in 2024 (NEA Waste Statistics, 2024). Food services — restaurants, canteens, and hotels — accounted for 28% of Singapore's food waste in 2022, approximately 211,000 tonnes (NEA, 2022). Singapore imports over 90% of its food supply, which makes food waste a national food-security concern, not just an environmental one (NEA, MSE 2024). The edible portion of this waste represents unrealised value — the Singapore Environment Council estimates the commercial sector loses approximately SGD 342 million annually to food waste.
-
-The core operational problem sits on the **merchant side**, and no current platform addresses it. F&B merchants producing surplus food face three compounding challenges:
-
-- **Surplus is unpredictable.** Without a forecast, merchants either over-produce (direct cost of waste) or under-produce (forgone revenue). Manual intuition does not reliably account for day-of-week patterns, weather, events, or historical trends.
-- **Discount decisions are reactive.** When surplus occurs, discounting is ad hoc — a best-guess on price with no systematic recovery calculation.
-- **Incumbent platforms ignore merchants.** Treatsure and Yindii are consumer-facing: they help consumers find discounted food, but leave merchants to guess their own surplus quantities and set their own prices. The merchant's core problem — predicting surplus before it happens — is unaddressed.
-
-Singapore's F&B landscape is dominated by small-to-mid operators: bakeries, cafés, and restaurants operating with predictable category mix and 5–50 daily surplus units. This segment is digitally ready, has structured operations, and bears disproportionate waste costs. Hawker stalls, while significant, are deferred to a later phase due to regulatory complexity (journal 0002).
+**SMU MBA Machine Learning — Individual Project | April 2026**
 
 ---
 
-## 2. The Solution
+## 1. Executive Summary
 
-SurplusSense is an **upstream operating intelligence platform** — not another consumer marketplace. It predicts surplus before it happens, recommends optimal discount actions, calculates revenue recovery, and screens for food safety. Every transaction improves the model, compounding accuracy over time.
+SurplusSense helps food merchants convert end-of-day surplus uncertainty into faster, safer, and more margin-aware decisions. It is a decision-support product — not a dashboard — that translates surplus predictions into specific recommended actions under food-safety guardrails. The product is pilot-ready; commercial deployment requires a structured merchant pilot with 3–5 outlets.
 
-### Three Core Capabilities
-
-**1. Surplus Prediction — XGBoost model**
-
-The model analyses 47 engineered features spanning time patterns (day-of-week, cyclical encoding), lag history (yesterday's surplus, same weekday last week), rolling aggregates (7-day surplus average and variance), merchant-level benchmarks, and category-level benchmarks. Trained on 4,027 synthetic records across 15 merchants and 13 categories, with 5-seed random holdout validation.
-
-XGBoost (n_estimators=250, max_depth=13, learning_rate=0.295) achieves a holdout MAE of **0.68 units** against a Historical Average baseline of 2.40 — a **72% reduction in prediction error**. XGBoost wins all 5 holdout seeds against tuned Random Forest (0.87 MAE).
-
-**2. Discount Recommendation Engine**
-
-A 10-tier rule-based system recommends a discount percentage (20–70% off) based on surplus quantity, remaining shelf life, and category. Every recommendation includes: estimated revenue recovery (discounted price × predicted surplus), optimal listing time, and latest safe pickup window. Merchants see the recovery calculation, not just a price suggestion.
-
-**3. Food Safety Screening**
-
-Five prototype rules check holding time, shelf life remaining, storage type appropriateness, pickup window safety, and preparation time. Items return SAFE (listable), CAUTION (list with warnings), or BLOCK (unsafe to list). _This is an advisory prototype — not SFA-validated. See Limitations._
-
-### The Data Moat
-
-The value compounds: more merchant transactions → better surplus predictions → higher sell-through rates → greater merchant trust → more merchant onboarding → more data. Each prediction cycle improves accuracy, creating a compounding advantage that a new entrant cannot replicate without years of merchant data.
-
-### Competitive Differentiation
-
-|                                  | SurplusSense           | Too Good To Go     | Treatsure          | Yindii             |
-| -------------------------------- | ---------------------- | ------------------ | ------------------ | ------------------ |
-| **Primary focus**                | Merchant operations    | Consumer discovery | Consumer discovery | Consumer discovery |
-| **ML-driven surplus prediction** | Yes                    | No                 | No                 | No                 |
-| **Merchant-side value**          | Operating intelligence | None               | None               | None               |
-| **Discount recommendation**      | Automated, tiered      | Merchant guess     | Manual             | Manual             |
-| **Food safety gating**           | Built-in               | No                 | No                 | No                 |
-| **Cold-start handling**          | Category benchmarks    | N/A                | N/A                | N/A                |
+Singapore generated 784,000 tonnes of food waste in 2024 (National Environment Agency). The merchant-side surplus decision — hold, monitor, discount, deep discount, donate, or discard — is where value is lost or recovered. Existing platforms help consumers discover discounted surplus; none help merchants decide what to discount, at what intensity, or when. SurplusSense fills this gap.
 
 ---
 
-## 3. Data Exploration
+## 2. Problem Worth Solving
 
-The synthetic dataset (4,027 records, 15 merchants, 13 categories, 90-day window) was explored to validate that simulated F&B surplus patterns match domain expectations before ML training.
+For F&B merchants — bakeries, cafés, and prepared-food outlets — the problem is a daily operational decision at 4pm: **what do I do with unsold inventory?**
 
-![Surplus by category](outputs/eda_surplus_by_category.png)
-_Figure 1: Surplus quantity distribution by product category. Bento Sets and Rice Dishes show highest median surplus; bakery categories cluster tightly._
+The decision is genuinely hard:
 
-![Day-of-week heatmap](outputs/eda_dow_heatmap.png)
-_Figure 2: Mean daily surplus by merchant type and day of week. Bakery merchants show elevated surplus mid-week; Small F&B peaks on weekends._
+- **Time pressure**: shelf life is already running down
+- **Margin trade-off**: deeper discounts recover more revenue but erode margin on items that would have sold at full price
+- **Safety risk**: items past safe holding times cannot be listed
+- **Labour constraints**: staff must decide under operating pressure
+- **Inconsistent judgment**: the same surplus item may receive different decisions across shifts
 
----
+The monetisable gap is narrower than "food waste" broadly: small F&B merchants often know they may have surplus, but lack a structured way to decide what action to take before the item loses value. The key decision happens late in the operating day. This is not only a forecasting problem — it is a time-sensitive trade-off between revenue recovery, food safety, staff workload, brand risk, and customer experience.
 
-## 4. Approach, Results & Business Model
-
-### ML Methodology
-
-A supervised regression pipeline was built on a synthetic dataset (4,027 rows, 15 merchants, 13 categories, 19 source fields). The training pipeline uses: (1) feature engineering producing 31 raw variables (temporal, lag, rolling-window, merchant aggregates) that expand to 47 model inputs after one-hot encoding of categorical variables (merchant_type, product_category, storage_type); (2) three baseline models (Historical Average, Previous Day, Same Weekday Last Week); (3) hyperparameter tuning via RandomizedSearchCV (30 iterations); (4) XGBoost and Random Forest both trained and compared; (5) 5-seed random 80/20 holdout for headline validation; (6) 5-fold TimeSeriesSplit cross-validation as a production-readiness check.
-
-![Merchant workflow](outputs/workflow_diagram.png)
-_Figure 3: End-to-end merchant decision flow with example outputs (BAK001, Ciabatta, 2026-02-10). From input through prediction, recommendation, safety check, and recovery estimate._
-
-As an illustrative example, consider Bakery 001 listing a Ciabatta product on a typical weekday. The pipeline predicts 11 units of surplus, calibrated against four similar bakeries by operating pattern. The recommendation engine evaluates the product's 93-hour shelf life and refrigerated storage, returning a 50% discount tier with a target list price of SGD 3.24 (down from SGD 6.47). Food safety screening confirms the listing is SAFE — holding time of 2 hours is within thresholds for refrigerated storage. Estimated revenue recovery is SGD 34.29 against a potential loss of SGD 68.58, a 50% recovery rate. The full decision takes under 200ms end-to-end on the deployed XGBoost model.
-
-### Model Results
-
-| Model                  | Holdout MAE | RMSE     | MAPE      | R²       |
-| ---------------------- | ----------- | -------- | --------- | -------- |
-| Historical Average     | 2.40        | 2.85     | 57.7%     | -0.12    |
-| Previous Day           | 1.98        | 2.61     | 37.6%     | 0.07     |
-| Same Weekday Last Week | 2.06        | 2.72     | 38.8%     | -0.01    |
-| Random Forest (Tuned)  | 0.87        | 1.16     | 17.1%     | 0.83     |
-| **XGBoost (Tuned)**    | **0.68**    | **0.91** | **12.6%** | **0.89** |
-
-XGBoost wins the i.i.d. holdout decisively (72% improvement vs Historical Average baseline, 66% vs Previous Day baseline). On TimeSeriesSplit CV — which measures performance under temporal distribution shift — Random Forest scores better (RF: 1.07 MAE vs XGBoost: 1.22 MAE). This gap is informative, not disqualifying: gradient boosting captures static patterns powerfully, but RF's stronger regularization tolerates temporal shift more reliably. For pilot deployment, both would be monitored and a drift-aware ensemble considered.
-
-### Business Model: Free Analytics + Transaction Fee
-
-The platform launches with a free tier — surplus prediction and waste analytics dashboard — to break the chicken-and-egg bootstrap problem. No consumers without merchants; no merchants without an immediate reason to join. The analytics tier provides standalone value: merchants reduce waste even without a single consumer transaction, solving the cold-start problem and beginning data collection immediately.
-
-A 15% transaction fee applies when surplus is sold through the marketplace. This rate undercuts Too Good To Go and similar surplus marketplaces, which typically charge 20–30% commission per transaction, is captured at the point of value realization (not upfront), and aligns platform revenue directly with merchant recovery outcomes.
-
-**Illustrative unit economics:** A bakery with SGD 19 in daily surplus, selling 50% of surplus through the platform at an average 35% discount, recovers SGD 6.65 in merchant revenue per day and generates SGD 1.00 in platform fee — approximately SGD 30/month per active merchant during a 30-day month. At 75 active merchants (5% of SAM), monthly recurring platform revenue is SGD 2,250.
-
-**Market sizing (illustrative):** Several thousand SFA-licensed F&B outlets operate across Singapore, with our initial focus on the small-to-mid independent segment (bakeries, cafés, single-location restaurants). TAM — several thousand SFA-licensed F&B outlets (illustrative; precise count to be validated against SFA registry). SAM — approximately 1,000–2,000 (estimated; bakeries, cafés, small restaurants with 5–50 daily surplus units) [footnote: SAM range based on industry segmentation; final figure to be validated against SFA registry pre-pilot]. SOM — 5% Year-1 capture = 50–100 merchants.
+**Target buyer**: Singapore-based bakery, café, or prepared-food outlet with recurring end-of-day surplus and enough daily volume for recovered value to exceed SGD 99–299 monthly subscription.
 
 ---
 
-## 5. Limitations & Decision Trail
+## 3. Product Approach
 
-**Limitations:** Synthetic data only (pilot validation required). Food safety rules are a prototype (not SFA-validated). Cold-start merchants use category benchmarks. MVP is a single-tenant Streamlit app — Phase 2 requires multi-tenant infrastructure, auth, and MLOps pipeline.
+SurplusSense is a **decision-support product** — it translates surplus-risk predictions into specific merchant actions. The six-step workflow:
 
-**Roadmap:** Phase 1 — real merchant pilot, food-safety expert review, PDPA consent flows. Phase 2 — production stack (PostgreSQL, FastAPI), drift monitoring, consumer marketplace. Phase 3 — personalised recommender, NEA waste reporting, ASEAN expansion.
+| Step                           | What happens                                                                                                     |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------- |
+| **1 — Enter context**          | Merchant selects product category, storage type, holding time, shelf life                                        |
+| **2 — Predict surplus**        | XGBoost model estimates expected surplus units from 46 leakage-aware features                                    |
+| **3 — Recommend action**       | Rule engine maps surplus quantity and shelf life to HOLD / MONITOR / DISCOUNT / DEEP DISCOUNT / DONATE / DISCARD |
+| **4 — Screen for safety**      | Five deterministic checks return SAFE / CAUTION / BLOCKED                                                        |
+| **5 — Estimate recovery**      | System calculates discounted revenue recovery vs potential loss                                                  |
+| **6 — Explain recommendation** | Merchant sees the specific reason for the recommended action                                                     |
 
-**Key decisions:** XGBoost deployed over RF (wins 5/5 holdout seeds, journal 0019). Free analytics tier + 15% transaction fee (solves cold-start, journal 0003). Surplus prediction before marketplace (builds data moat, journal 0001). PDPA and food-safety validation deferred to pilot (journals 0011, 0006).
+**Design choice: rules over learning.** Recommendations are rule-based because food safety cannot be entrusted to an opaque learned policy. A merchant who lists an unsafe item creates liability that no accuracy metric offsets. Rule-based logic is fully explainable — every recommendation traces to a specific rule.
 
 ---
 
-_Per journal 0010: "The strongest product is not the one with the most features, but the one with the clearest user, sharpest decision problem, most defensible ML logic, and most honest implementation boundary."_
+## 4. ML/AI Architecture and Results
 
-### Reproducibility
+### Why This Is an ML Decision-Support Product, Not a Dashboard
 
-All pipelines use `RANDOM_SEED=42` for data generation, train/test splitting, and hyperparameter tuning. Multi-seed validation evaluates model stability across five holdout seeds (1, 7, 42, 123, 999). The synthetic dataset (4,027 rows, 15 merchants, 13 categories, 90-day window) is regenerated deterministically by `data/generate_synthetic_data.py`. Model training runs through `src/train_model.py`, which applies RandomizedSearchCV (30 iterations) on 5-fold TimeSeriesSplit for hyperparameter selection, then evaluates final models on a 5-seed random holdout (seeds 1, 7, 42, 123, 999). All embedded figures are regenerated by `scripts/generate_report_figures.py` from the same synthetic data.
+Most F&B tech products show prediction scores. This product shows decisions. The distinction matters:
 
-**Sources:**
+- A merchant with 11 surplus units of Ciabatta needs to know: **50% discount, list now, SGD 35 recovered** — not "MAE 0.64"
+- The prediction layer (XGBoost) estimates _what will happen_; the downstream layers decide _what to do about it_
+- Cold-start merchants (no historical data) receive category-benchmark estimates, so the product is useful from day one
 
-- National Environment Agency (NEA) Waste Statistics 2024
-- NEA Food Waste Management 2023 baseline data
-- Ministry of Sustainability and the Environment, F&B Sustainability Playbook (2024)
-- Singapore Environment Council estimates
-- Industry comparisons: Too Good To Go, Treatsure, Yindii public reporting
+The architecture deliberately separates prediction from prescription: **the model estimates what may happen; the rule and safety layers decide what action is permissible and commercially sensible.**
+
+**Architecture layers:**
+
+| Layer               | Component                                 | Role                                                        |
+| ------------------- | ----------------------------------------- | ----------------------------------------------------------- |
+| Input               | Merchant/item context                     | Merchant enters product and outlet details                  |
+| Feature engineering | 46 features                               | Lag, rolling, expanding-window, temporal, category features |
+| Prediction          | XGBoost                                   | Estimates surplus units                                     |
+| Validation          | Temporal holdout + TimeSeriesSplit        | Forward-looking evaluation                                  |
+| Leakage control     | Expanding-window aggregates with shift(1) | Prevents future-information lookahead                       |
+| Decision            | Rule-based recommendation engine          | Converts surplus prediction into action                     |
+| Governance          | Food-safety rules                         | BLOCK/CAUTION/SAFE overrides commercial optimisation        |
+| Output              | Merchant decision cockpit                 | Recommended action + recovery estimate + explanation        |
+
+**Design decisions:**
+
+| Design decision       | Option rejected          | Final choice                              | Why it matters                                         |
+| --------------------- | ------------------------ | ----------------------------------------- | ------------------------------------------------------ |
+| Train/test split      | Random split             | Temporal holdout                          | Prevents inflated accuracy from future information     |
+| Feature aggregation   | Full-dataset averages    | Expanding-window aggregates with shift(1) | Prevents target leakage                                |
+| Recommendation logic  | Learned black-box policy | Transparent rule engine                   | Safer for food handling; easier for merchants to trust |
+| New merchant handling | Require historical data  | Category benchmark fallback               | Makes product usable from day one                      |
+| Output format         | Prediction score         | Recommended action + recovery value       | Matches real merchant decision workflow                |
+
+**Model results** (synthetic training data, 4,027 records, 15 merchants, 13 categories, 90-day window):
+
+| Model               | Temporal Holdout MAE | vs Historical Average |
+| ------------------- | -------------------: | --------------------- |
+| Historical Average  |                 1.49 | —                     |
+| Previous Day        |                 2.01 | −35%                  |
+| **XGBoost (Tuned)** |             **0.64** | **−57%**              |
+
+5-fold TimeSeriesSplit CV MAE: 1.38 ± 1.22 (higher variance reflects distributional shift in synthetic data).
+
+**Validation caveat:** Results are from synthetic/prototype data. They indicate technical feasibility and feature-signal logic, not production accuracy. Aggregate features use expanding-window logic to prevent target leakage. Real merchant pilot data is required before commercial deployment.
+
+---
+
+## 5. Business Case
+
+**Who pays:** Bakeries, cafés, and small F&B operators with 5–50 daily surplus units in Singapore.
+
+**Why they pay:** Recovered surplus value plus avoided disposal costs could exceed SGD 99–299 per month per outlet, subject to pilot validation.
+
+**Merchant unit economics:**
+
+| Scenario     | Daily recovered value | Monthly recovered value (26 operating days) | Supports pricing                     |
+| ------------ | --------------------: | ------------------------------------------: | ------------------------------------ |
+| Conservative |             SGD 6/day |                               SGD 156/month | Entry plan at SGD 99/month           |
+| Base case    |            SGD 12/day |                               SGD 312/month | Mid plan at SGD 199/month            |
+| Strong case  |            SGD 20/day |                               SGD 520/month | SGD 299/month plan + transaction fee |
+
+The commercial case does not require every surplus decision to generate large savings. Even SGD 6–12 daily recovery can justify the low-to-mid subscription tier if staff use the system consistently.
+
+**Proposed pricing** (pilot-stage hypothesis):
+
+| Revenue stream                      | Rationale                                                          |
+| ----------------------------------- | ------------------------------------------------------------------ |
+| Monthly SaaS: SGD 99–299 per outlet | Predictable recurring revenue; easier for merchants to budget      |
+| 15% recovered-value fee             | Aligns SurplusSense revenue with merchant benefit                  |
+| Future marketplace integration fee  | Phase 2 if product connects surplus items to consumer channels     |
+| ESG/reporting module                | Additional value for chains needing waste reporting across outlets |
+
+**Buyer-validation table:**
+
+| Assumption                           | Current evidence                                      | Validation needed                              | Success metric                  |
+| ------------------------------------ | ----------------------------------------------------- | ---------------------------------------------- | ------------------------------- |
+| Merchants have surplus pain          | Singapore F&B waste 784k tonnes/year (NEA)            | 4-week pilot with 3–5 merchants                | Waste reduction % per outlet    |
+| Recommendation acceptance rate       | Workflow designed for merchant trust signals          | Live pilot observation                         | Acceptance rate ≥ 60%           |
+| Recovered value exceeds cost         | Model estimates SGD 6–20/day on prototype             | Pilot measures actual recovered revenue        | Recovered value ≥ SGD 200/month |
+| Safety gate prevents unsafe listings | 5 deterministic rules with BLOCK for high-risk        | Rules tested against real operating conditions | Unsafe recommendation rate = 0  |
+| Staff use dashboard daily            | Low-friction manual entry; no POS required in Phase 1 | Pilot observes daily active usage              | ≥ 4 sessions/week per outlet    |
+
+---
+
+## 6. Pilot Validation Plan
+
+The next step is a 4-week engagement with 3–5 volunteer bakeries or cafés in Singapore:
+
+- 1–2 daily surplus decision cycles per outlet
+- Staff enter item context manually via the dashboard
+- Recommendations issued; staff record accept / override / ignore with brief reason
+
+**Success metrics:**
+
+| Metric                         | Target                                                 |
+| ------------------------------ | ------------------------------------------------------ |
+| Daily active usage             | At least 70% of operating days                         |
+| Recommendation acceptance rate | At least 50%                                           |
+| Average recovered value        | At least SGD 6–12 per day                              |
+| Avoided unsafe listing         | Zero unsafe items recommended for sale                 |
+| Staff decision time            | Reduced versus manual process                          |
+| Willingness to pay             | At least 2 of 5 outlets willing to pay SGD 99+ monthly |
+
+The pilot produces real-data inputs required before full deployment: POS sales history, inventory snapshots, actual disposal records, safety rule calibration, and willingness-to-pay signals. Because the current product uses synthetic data, the pilot is required before production performance claims.
+
+---
+
+## 7. Why This Is Ready for Assessment
+
+SurplusSense satisfies the individual assignment requirement because it is a **working interactive product**, not a slide concept or notebook. The user can enter merchant and item context, receive a surplus prediction, see a recommended action, review food-safety status, and estimate revenue recovery.
+
+The product demonstrates maturity beyond the weekly prototype in four ways:
+
+1. **Additional decision layers**: prediction is combined with recommendation, food-safety gating, and recovery-value estimation
+2. **Improved model discipline**: temporal validation and leakage-aware aggregate features reduce risk of overstated model performance
+3. **Improved user experience**: dashboard is organised around merchant decisions rather than technical metrics
+4. **Commercial path**: pilot plan defines target buyers, pricing logic, success metrics, and next validation steps
+
+The product is **pilot-ready**: not yet production-validated, but sufficiently complete for a merchant, investor, or company sponsor to evaluate.
+
+---
+
+## 8. Limitations and Next Validation
+
+| Limitation                            | Impact                                             | Mitigation                                                  |
+| ------------------------------------- | -------------------------------------------------- | ----------------------------------------------------------- |
+| **Synthetic training data**           | Model accuracy on real merchant data unknown       | Retrain on pilot merchant data before production            |
+| **Food safety rules advisory**        | Not SFA-validated; merchant assumes responsibility | Clear disclaimer in UI; BLOCK/CAUTION/SAFE is guidance only |
+| **Single-tenant MVP**                 | No multi-merchant support                          | Phase 2 multi-tenant infrastructure                         |
+| **Cold-start uses category averages** | Less accurate for unusual merchants                | Improves as merchant-specific data accumulates              |
+| **No POS/inventory integration**      | Manual entry required                              | Phase 2 POS/inventory integration                           |
+| **No live pilot conducted**           | No real merchant validation                        | Structured 4-week pilot plan defined                        |
+
+---
+
+## 9. References
+
+- National Environment Agency, Food Waste Management, Singapore, 2024
+- SurplusSense Synthetic Data Generator: `data/generate_synthetic_data.py`
+- Model and Evaluation Pipeline: `src/train_model.py`, `src/feature_engineering.py`
+- SMU MGMT655 Machine Learning for Decision Making — Individual Assignment Requirements
+- Yindii, Treatsure, Too Good To Go (Singapore surplus-food platform examples)
+
+---
+
+_SurplusSense is a pilot-ready decision-support prototype. It is not production-deployed, not SFA-validated, and not commercially live. All performance metrics are from synthetic data and require pilot validation before commercial claims._

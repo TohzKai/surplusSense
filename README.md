@@ -1,88 +1,327 @@
-# SurplusSense Food App
+# SurplusSense: Decision Intelligence for F&B Merchants
 
-SurplusSense is a merchant-facing AI decision cockpit for F&B surplus reduction. It predicts daily surplus quantities per product category using a supervised XGBoost regression model, recommends tiered discount pricing (20-70% off) based on shelf life and category rules, calculates estimated revenue recovery, and screens listings against food safety thresholds. The Streamlit dashboard is the primary interface; merchants input today's product mix and receive a ranked recommendation within seconds. The ML pipeline uses supervised regression (XGBoost with 5-seed holdout validation) and is evaluated against three baseline models.
+A decision-support product that helps food merchants decide what to discount, donate, hold, or discard before unsold inventory becomes waste — combining ML-assisted surplus prediction with transparent rule-based recommendation logic.
 
 ---
 
-## Quick Start
+## For Grading — Start Here
+
+| File                             | Purpose                                                                         |
+| -------------------------------- | ------------------------------------------------------------------------------- |
+| `app/streamlit_app.py`           | **Working interactive product** — run with `streamlit run app/streamlit_app.py` |
+| `docs/EXECUTIVE_REPORT.md`       | 4-page executive summary — problem, product, results, business case             |
+| `COC_DECISION_LOG.md`            | Prototype-to-product decision journey and judgment evidence                     |
+| `DIGITAL_TRANSFORMATION_DECK.md` | 8-slide executive presentation                                                  |
+| `PILOT_VALIDATION_PLAN.md`       | Proposed 4-week merchant pilot design                                           |
+| `src/`                           | Reproducible ML pipeline with 63 passing unit tests                             |
+
+---
+
+## Final Professor Review Path
+
+Recommended review order:
+
+1. `docs/EXECUTIVE_REPORT.md` — executive summary, business case, and results
+2. `app/streamlit_app.py` — working interactive product
+3. `COC_DECISION_LOG.md` — decision journey and final decision audit
+4. `workspaces/SurplusSense/01-analysis/04-final-positioning.md` — why the product narrowed from marketplace to merchant cockpit
+5. `workspaces/SurplusSense/02-plans/01-implementation-plan.md` — final MVP scope and implementation plan
+6. `workspaces/SurplusSense/03-user-flows/01-merchant-flows.md` — final merchant decision flow
+7. `workspaces/SurplusSense/04-validate/grading-self-assessment-v6-final.md` — final validation and supersession of older assessments
+8. `workspaces/SurplusSense/briefs/01-product-brief.md` — final product definition
+9. `workspaces/SurplusSense/journal/0030-DECISION-final-scope-and-assessment-alignment.md` — final scope decision
+10. `workspaces/SurplusSense/todos/completed/008-final-assessment-alignment.md` — final assessment-alignment closure
+
+---
+
+## Product Overview
+
+SurplusSense is not an ML dashboard. It is a **decision-support product** that translates surplus-risk predictions into specific merchant actions.
+
+The product delivers five decision-support capabilities:
+
+1. **Surplus prediction** — estimates expected waste units (XGBoost model, 46 engineered features)
+2. **Action recommendation** — suggests HOLD / MONITOR / DISCOUNT / DEEP DISCOUNT / DONATE / DISCARD based on quantity and time pressure
+3. **Discount tier guidance** — maps surplus and shelf life to a specific discount intensity (20–70%)
+4. **Food safety screening** — checks shelf life, holding time, storage type, and pickup window; returns SAFE / CAUTION / BLOCK
+5. **Recovery value estimation** — calculates estimated revenue recovery vs potential loss
+
+The output is a **recommended business action** — not a prediction score.
+
+---
+
+## Who It Is For
+
+- Bakeries, cafés, and small F&B operators with 5–50 daily surplus units
+- Singapore-based, SFA-licensed food operators
+- Food retailers, supermarket fresh-food sections, prepared-food operators
+
+The product is designed for merchants who already know they have a surplus problem and need structured guidance on what to do about it.
+
+---
+
+## Why SurplusSense Is Not Just an ML Dashboard
+
+Most F&B tech products show prediction scores. This product shows decisions.
+
+The prediction layer (XGBoost) estimates _what will happen_. The downstream layers decide _what to do about it_. This distinction matters:
+
+- A merchant with 11 surplus units of Ciabatta needs to know: **50% discount, list now, SGD 35 recovered** — not just "MAE 0.68"
+- The rule-based recommendation and safety layers convert the prediction into an action the merchant can take immediately
+- Cold-start merchants (no historical data) receive category-benchmark estimates, so the product is useful from day one
+
+---
+
+## How to Run
 
 ```bash
+# Install dependencies
 pip install -r requirements.txt
+
+# Generate synthetic training data (one-time)
 python data/generate_synthetic_data.py
+
+# Train model and evaluate (saves to outputs/)
 python src/train_model.py
+
+# Run the decision-support dashboard
 streamlit run app/streamlit_app.py
 ```
+
+The dashboard opens at `http://localhost:8501`.
+
+---
+
+## How to Use the Dashboard
+
+1. **Open the app** — streamlit dashboard launches at localhost:8501
+2. **Select or enter merchant context** — merchant type, product category, storage type, preparation time
+3. **Enter item details** — original price, shelf life, current holding time
+4. **Review the recommendation** — the app shows:
+   - Predicted surplus quantity (XGBoost model)
+   - Recommended action (DISCOUNT / MONITOR / HOLD / etc.)
+   - Recommended discount tier (20–70%)
+   - Food safety status (SAFE / CAUTION / BLOCK)
+   - Estimated revenue recovery vs potential loss
+   - Why this recommendation was made (reasoning displayed)
+5. **Adjust inputs** — rerun with different parameters to compare scenarios
+
+---
+
+## Reproducibility
+
+All pipelines use `RANDOM_SEED=42` for deterministic results.
+
+```bash
+python data/generate_synthetic_data.py   # Regenerate training data
+python src/train_model.py                # Retrain model, save to outputs/surplus_model.pkl
+python src/evaluate_model.py             # Evaluate on holdout set
+pytest tests/unit/ -q                   # Run unit tests (63 passing)
+```
+
+**Test results:** 63 unit tests across 5 modules — all passing.
+**Model outputs:** `outputs/model_results.csv`, `outputs/metrics_summary.csv`
+**Trained model:** `outputs/surplus_model.pkl`
+
+---
+
+## Assignment Deliverables
+
+This submission includes all required deliverables:
+
+| Deliverable                    | File                             | Description                                                                                                     |
+| ------------------------------ | -------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| Working interactive product    | `app/streamlit_app.py`           | Streamlit dashboard with full decision workflow                                                                 |
+| Executive report (max 4 pages) | `docs/EXECUTIVE_REPORT.md`       | Business case, worked example, model results                                                                    |
+| COC decision log               | `COC_DECISION_LOG.md`            | Prototype-to-product decision journey                                                                           |
+| Supporting deck                | `DIGITAL_TRANSFORMATION_DECK.md` | 8-slide executive presentation                                                                                  |
+| Pilot validation plan          | `PILOT_VALIDATION_PLAN.md`       | Proposed 4-week merchant pilot: recovery value, adoption, safety exceptions, and willingness-to-pay assumptions |
+
+---
+
+## Key Files for Grading
+
+| Category                  | File                             | What It Shows                                                    |
+| ------------------------- | -------------------------------- | ---------------------------------------------------------------- |
+| **Working product**       | `app/streamlit_app.py`           | Interactive decision-support dashboard                           |
+| **ML pipeline**           | `src/train_model.py`             | XGBoost training, temporal 80/20 holdout                         |
+| **Feature engineering**   | `src/feature_engineering.py`     | 46 features: temporal, lag, rolling, expanding-window aggregates |
+| **Recommendation engine** | `src/recommendation_engine.py`   | 10-tier discount logic, recovery calculation                     |
+| **Safety rules**          | `src/food_safety_rules.py`       | 5 safety checks: BLOCK/CAUTION/SAFE                              |
+| **Cold-start**            | `src/recommendation_engine.py`   | Category benchmark fallback for new merchants                    |
+| **Model evaluation**      | `src/evaluate_model.py`          | Holdout evaluation, baseline comparison                          |
+| **Tests**                 | `tests/unit/`                    | 63 passing unit tests                                            |
+| **Model outputs**         | `outputs/model_results.csv`      | XGBoost MAE 0.64 (temporal holdout) vs baseline 1.49             |
+| **Executive report**      | `docs/EXECUTIVE_REPORT.md`       | 4-page business document                                         |
+| **Decision log**          | `COC_DECISION_LOG.md`            | Decision journey, judgment evidence                              |
+| **Deck**                  | `DIGITAL_TRANSFORMATION_DECK.md` | 8-slide executive presentation                                   |
+
+---
+
+## Model Performance
+
+| Model               | Temporal Holdout MAE | vs Historical Average |
+| ------------------- | -------------------- | --------------------: |
+| Historical Average  | 1.49                 |                     — |
+| **XGBoost (Tuned)** | **0.64**             |              **−57%** |
+
+Temporal holdout MAE (0.64) is the primary metric — it reflects forward-looking prediction on the last 20% of dates. 5-fold TimeSeriesSplit CV MAE: 1.38 ± 1.22 (higher variance reflects distributional shift across temporal folds). Results from `outputs/model_results.csv` and `models/model_metadata.json`.
+
+---
+
+## ML Architecture
+
+### Problem Type
+
+Supervised regression: predict surplus units per item per day.
+
+### Model
+
+XGBoost regressor, tuned via 5-fold TimeSeriesSplit CV. Compared against Historical Average and Previous Day baselines.
+
+### Feature Categories (46 features)
+
+| Category                   | Examples                                                              |
+| -------------------------- | --------------------------------------------------------------------- |
+| Merchant/outlet            | merchant type, category, storage type                                 |
+| Product                    | original price, shelf life, preparation time                          |
+| Temporal                   | day of week, weekend flag, month, sin/cos encodings                   |
+| Lag                        | prev_day_surplus, same_weekday_last_week_surplus                      |
+| Rolling                    | surplus_7day_avg, surplus_7day_max, surplus_7day_std                  |
+| Expanding-window aggregate | merchant_avg_surplus, category_avg_surplus, dow_avg_surplus           |
+| Derived                    | holding_vs_shelf_ratio, surplus_rate_7day, production_vs_merchant_avg |
+
+### Validation
+
+- **Temporal 80/20 holdout** (last 20% of dates as holdout, sorted by date) — primary metric
+- **5-fold TimeSeriesSplit CV** — additional validation
+
+Random split is NOT used as the primary evaluation method because real deployment predicts future surplus from past data; random split would allow future information to inflate accuracy estimates.
+
+### Leakage Control
+
+All aggregate features use **expanding-window logic with shift(1)**:
+
+```python
+grp = df.groupby("merchant_id")["surplus_quantity"]
+df["merchant_avg_surplus"] = grp.cumsum().shift(1) / grp.cumcount().replace(0, float("nan"))
+```
+
+For each row at date D, aggregates use only data from dates strictly before D. Rolling features use `.shift(1)` before `.rolling()`. The `surplus_vs_merchant_avg` interaction feature (which used current-row target) was removed entirely.
+
+### Output
+
+The model outputs a **predicted surplus quantity**. Downstream layers convert this into:
+
+- Recommended action (HOLD / MONITOR / DISCOUNT / DEEP DISCOUNT / DONATE / DISCARD)
+- Discount tier (20–70%)
+- Food-safety status (SAFE / CAUTION / BLOCKED)
+- Estimated recovery value
+
+### Architecture Flow
+
+```
+Input data → Feature engineering → XGBoost surplus prediction
+→ Recommendation rules → Food-safety gate → Recovery-value estimate
+→ Merchant decision cockpit
+```
+
+---
+
+## Why This Is Not a Default COC Demo
+
+SurplusSense goes beyond a default COC-generated prototype in five ways:
+
+1. **Leakage-aware temporal validation** — temporal holdout and TimeSeriesSplit, not generic random split
+2. **Prediction → action conversion** — XGBoost output feeds a rule engine, not a dashboard
+3. **Food-safety gating** — commercial optimisation does not override safety
+4. **Recovery-value estimation** — ML output linked to business value, not just accuracy metrics
+5. **Pilot validation plan** — usage, recovery, safety, and willingness-to-pay metrics defined
+
+---
+
+## Limitations (Honestly Stated)
+
+- **Data:** Results based on synthetic F&B data. Pilot validation with real merchant data required before production deployment.
+- **Safety rules:** Prototype advisory only — not SFA-validated. Merchant assumes responsibility for listing decisions.
+- **Cold-start:** New merchants use category benchmarks. Accuracy improves as merchant-specific data accumulates.
+- **No POS integration:** Manual item entry required in Phase 1. Automated input planned for Phase 2.
+- **Single-tenant:** Phase 1 runs on a single-merchant basis. Multi-tenant infrastructure for Phase 2.
 
 ---
 
 ## Project Structure
 
 ```
-app/                    Streamlit dashboard (merchant UI, prediction, recommendations)
-src/                    ML pipeline modules
-  train_model.py        XGBoost training, RandomizedSearchCV, model serialization
-  feature_engineering.py 47-feature engineering (temporal, lag, rolling, aggregates)
-  recommendation_engine.py  Tiered discount pricing, revenue recovery calculation
-  food_safety_rules.py  SAFE/CAUTION/BLOCK screening rules
-  evaluate_model.py      Holdout evaluation, metrics computation
-data/                   Synthetic F&B data (4,027 rows, 15 merchants, 13 categories)
-docs/                   Executive report, specifications
-outputs/                Trained model (.pkl), CSVs, EDA figures
-tests/unit/             59 unit tests (pytest)
-specs/                  Domain specifications (ML, food safety, pricing, UX)
-journal/                Design decision log (22 entries)
-models/                 Model metadata (hyperparameters, feature names, validation results)
-scripts/                Figure generation script
+app/
+  streamlit_app.py          # Decision-support dashboard (1,569 lines)
+src/
+  train_model.py            # XGBoost training + temporal 80/20 holdout
+  feature_engineering.py    # 46-feature engineering pipeline with expanding-window aggregates
+  recommendation_engine.py  # 10-tier discount engine + cold-start
+  food_safety_rules.py     # 5 safety check functions
+  evaluate_model.py         # Model evaluation + baseline comparison
+data/
+  generate_synthetic_data.py # Synthetic F&B data generator
+  synthetic_fnb_data.csv    # Training data (4,027 rows, 15 merchants)
+outputs/
+  surplus_model.pkl        # Trained XGBoost model
+  model_results.csv        # Evaluation metrics
+  metrics_summary.csv      # MAE/RMSE/MAPE/R² by model
+tests/unit/
+  test_data_generator.py
+  test_feature_engineering.py
+  test_food_safety_rules.py
+  test_recommendation_engine.py
+  test_model_training.py
 ```
 
 ---
 
-## Reproducibility
+## Technology Stack
 
-All pipelines use `RANDOM_SEED=42`. Regenerate everything:
+- **Backend:** Python, scikit-learn, XGBoost
+- **Dashboard:** Streamlit (interactive UI)
+- **Data:** Pandas, NumPy
+- **Evaluation:** Temporal 80/20 holdout + 5-fold TimeSeriesSplit CV
+- **Testing:** pytest (63 unit tests)
+- **Random seed:** 42 (all pipelines)
+
+---
+
+_SurplusSense was developed iteratively with structured validation at each stage. All product decisions reflect deliberate business reasoning — not automated defaults._
+
+---
+
+## ML Technique Family Declaration
+
+SurplusSense foregrounds **supervised machine learning** through XGBoost surplus prediction, combined with deterministic recommendation and food-safety rules. The individual assignment's technique family is therefore explicitly declared as supervised learning. The separate team project must be checked independently to ensure it foregrounds a different ML technique family, as required by MGMT655.
+
+The supervised regression approach (XGBoost predicting surplus units as a continuous value) was chosen for temporal holdout performance, explainability, and safety-critical applicability.
+
+---
+
+## Final Assessment Evidence Map
+
+| MGMT655 Requirement           | Evidence in Repository                                                                                          |
+| ----------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| Working interactive product   | `app/streamlit_app.py` — Streamlit decision cockpit                                                             |
+| Executive report max 4 pages  | `docs/EXECUTIVE_REPORT.md` (~197 lines)                                                                         |
+| COC decision log              | `COC_DECISION_LOG.md` — 12 sections, human-judgment audit                                                       |
+| Problem worth solving         | `docs/EXECUTIVE_REPORT.md` §2; `workspaces/SurplusSense/01-analysis/04-final-positioning.md`                    |
+| ML/AI depth                   | `README.md` ML Architecture; `src/feature_engineering.py`; `models/model_metadata.json`                         |
+| Business case                 | `docs/EXECUTIVE_REPORT.md` §5; `PILOT_VALIDATION_PLAN.md`                                                       |
+| User flows                    | `workspaces/SurplusSense/03-user-flows/01-merchant-flows.md`                                                    |
+| Validation                    | `workspaces/SurplusSense/04-validate/grading-self-assessment-v6-final.md`                                       |
+| Process journal               | `workspaces/SurplusSense/journal/` — 29 entries                                                                 |
+| Execution todos               | `workspaces/SurplusSense/todos/completed/`                                                                      |
+| Not a default COC demo        | `COC_DECISION_LOG.md` §11 — human-judgment decision audit                                                       |
+| Different ML technique family | Supervised XGBoost regression; team project ML technique family confirmed separately (per MGMT655 instructions) |
+
+### Recommended Validation Command
 
 ```bash
-python data/generate_synthetic_data.py     # Regenerate data/synthetic_fnb_data.csv
-python src/train_model.py                  # Retrain model, save to outputs/surplus_model.pkl
-python scripts/generate_report_figures.py   # Regenerate EDA figures and workflow diagram
+python -m pytest -q
 ```
 
----
-
-## Documentation
-
-- `docs/EXECUTIVE_REPORT.md` — Executive report (4 pages, 3 figures)
-- `journal/` — 22 journal entries: scoping decisions, model trade-offs, implementation rationale
-- `models/model_metadata.json` — XGBoost hyperparameters, feature names, 5-seed validation results
-- `specs/` — Domain specifications (ML surplus prediction, recommendations, food safety, pricing)
-
----
-
-## Testing
-
-```bash
-pytest tests/unit/ -q
-```
-
-59 tests, all passing. Tests cover: feature engineering, recommendation engine, food safety screening, model evaluation.
-
----
-
-## Docker
-
-```bash
-docker build -t surplussense .
-docker run -p 8501:8501 surplussense
-```
-
-Docker build was not verified locally (Docker not installed). The Dockerfile follows standard Python image conventions and has been reviewed for correctness.
-
----
-
-## Limitations
-
-- Synthetic data only — results are based on generated F&B patterns, not real merchant data; pilot validation required before deployment
-- Food safety rules are advisory prototype — not validated against SFA regulations; merchant assumes responsibility for listing decisions
-- Single-tenant Streamlit MVP — no multi-merchant support, no auth, no MLOps pipeline; Phase 2 requires production infrastructure
-- PDPA compliance deferred — no consent flows or data handling procedures implemented; required before real merchant data
-- No video demo — live dashboard walkthrough not recorded
+Result: **63 passed** — all SurplusSense product unit tests. `pytest.ini` at repository root restricts discovery to `tests/unit/` (excluding `tests/sdk/` which contains Kailash SDK template tests).

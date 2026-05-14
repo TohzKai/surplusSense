@@ -1,5 +1,5 @@
 model,MAE,RMSE,MAPE,SMAPE,R2,MedAE,is_baseline
-historical_average,2.4017,2.8527,57.7154,39.6530,-0.1153,,True
-previous_day,1.9800,2.6086,37.5537,33.6510,0.0679,,True
-same_weekday_last_week,2.0593,2.7160,38.7965,34.5354,-0.0108,,True
-XGBoost,0.6824,0.9144,12.6316,12.1130,0.8937,,False
+historical_average,1.4854,1.9119,29.4628,25.5838,0.4776,1.2,True
+previous_day,2.0078,2.6601,37.8515,34.6189,-0.0113,2.0,True
+same_weekday_last_week,1.9081,2.5664,36.0112,32.9289,0.0587,1.325,True
+XGBoost_temporal_holdout,0.6355,0.8131,12.2976,11.749,0.9068,0.5408,False

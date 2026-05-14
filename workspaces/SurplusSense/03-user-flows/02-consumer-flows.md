@@ -1,5 +1,9 @@
 # User Flows: Consumer Journey
 
+> **Status: Phase 2 / not included in individual assignment MVP.**
+>
+> This flow is retained as evidence of earlier product exploration. The final individual assignment focuses on the merchant-side decision-support cockpit because it better aligns with the MGMT655 requirement for a working AI/ML decision-support product. Consumer marketplace features are Phase 2.
+
 ## C1: Consumer Onboarding
 
 ```

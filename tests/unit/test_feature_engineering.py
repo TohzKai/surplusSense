@@ -96,17 +96,23 @@ def test_create_category_aggregates():
 
 
 def test_create_interaction_features():
-    """Interaction features should be created."""
+    """Interaction features should be created.
+
+    Note: surplus_vs_merchant_avg was removed because it used the current row's
+    surplus_quantity (the target) as a feature input — a form of current-row
+    target leakage. The remaining interaction features are safe.
+    """
     from src.feature_engineering import create_merchant_aggregates, create_interaction_features
 
     df = create_sample_data()
-    df = create_merchant_aggregates(df)  # prerequisite for surplus_vs_merchant_avg
+    df = create_merchant_aggregates(df)
     df = create_interaction_features(df)
 
     assert "weekend_promotion" in df.columns
-    assert "surplus_vs_merchant_avg" in df.columns
     assert "production_vs_merchant_avg" in df.columns
     assert "holding_vs_shelf_ratio" in df.columns
+    # surplus_vs_merchant_avg was removed — it used current-row target as a feature
+    assert "surplus_vs_merchant_avg" not in df.columns
 
 
 def test_engineer_features_complete_pipeline():
