@@ -240,6 +240,29 @@ SurplusSense goes beyond a default COC-generated prototype in five ways:
 
 ---
 
+## Final MVP Scope
+
+**Included:**
+- Streamlit merchant cockpit
+- Supervised ML surplus prediction with XGBoost
+- Temporal validation and leakage-aware feature engineering
+- Deterministic recommendation rules
+- Food-safety gating
+- Recovery-value estimation
+- Explanation layer
+- Unit tests
+- Executive report
+- COC decision log
+- Process evidence trail
+
+**Not included:**
+- Consumer marketplace
+- Payments
+- QR pickup / collection
+- Delivery logistics
+- POS integration
+- Real merchant deployment
+
 ## Limitations (Honestly Stated)
 
 - **Data:** Results based on synthetic F&B data. Pilot validation with real merchant data required before production deployment.
@@ -292,6 +315,12 @@ tests/unit/
 _SurplusSense was developed iteratively with structured validation at each stage. All product decisions reflect deliberate business reasoning — not automated defaults._
 
 ---
+
+## GitHub Submission Note
+
+This repository is curated for GitHub-link submission. Local AI-tool settings, cache files, SDK/template tests, deployment files, scripts, and old marketplace/payment specs have been removed or ignored so the professor can focus on the final product and COC decision evidence.
+
+Previous workspace files that used the early "Food App" working title are retained in `workspaces/SurplusSense/journal/` with explicit historical-notes headers explaining they predate the final SurplusSense repositioning.
 
 ## ML Technique Family Declaration
 

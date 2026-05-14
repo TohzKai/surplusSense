@@ -235,3 +235,75 @@ zip -r SurplusSense_FINAL.zip \
 ```
 
 This produces `SurplusSense_FINAL.zip` containing only the assessment-relevant files.
+
+---
+
+## GitHub Link Submission
+
+This repository is submitted via GitHub link, not as a ZIP file. Therefore, the repository itself is the submission package and must be curated.
+
+### Kept in repository
+
+The following constitute the final GitHub submission:
+
+```
+README.md
+docs/EXECUTIVE_REPORT.md
+COC_DECISION_LOG.md
+PILOT_VALIDATION_PLAN.md
+DEMO_SCRIPT.md
+DIGITAL_TRANSFORMATION_DECK.md
+FINAL_SUBMISSION_PACKAGE.md
+SUBMISSION_CHECKLIST.md
+app/
+src/
+data/
+models/
+outputs/
+tests/unit/
+pytest.ini
+requirements.txt
+pyproject.toml
+workspaces/SurplusSense/
+```
+
+### Removed or ignored
+
+The following have been removed from git tracking or deleted:
+
+```
+# Local AI/tooling
+.claude/
+.coc-sync-marker
+
+# Environment and session
+.env
+.session-notes
+
+# Build artifacts
+__pycache__/
+.pytest_cache/
+__MACOSX/
+.DS_Store
+
+# SDK infrastructure
+tests/sdk/
+deploy/
+mcp-configs/
+scripts/
+.github/
+
+# Build artifacts
+Dockerfile
+.dockerignore
+
+# Historical Phase 2 exploration
+specs/
+
+# Templates
+workspaces/_template/
+```
+
+### Why
+
+The GitHub link should foreground final assessment evidence rather than local settings, cache files, SDK templates, deployment scaffolding, or old marketplace/payment exploration. Earlier marketplace/payment/consumer specifications were excluded because they were Phase 2 exploration, not the submitted MVP. The final MVP boundary is documented in README, COC decision log, implementation plan, merchant user flow, and v6 validation.

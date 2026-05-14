@@ -5,22 +5,14 @@ __pycache__/
 *.so
 .Python
 build/
-develop-eggs/
 dist/
-downloads/
-eggs/
-.eggs/
-lib/
-!scripts/hooks/lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
 *.egg-info/
-.installed.cfg
 *.egg
-MANIFEST
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
 
 # Virtual environments
 .env
@@ -28,8 +20,6 @@ MANIFEST
 env/
 venv/
 ENV/
-env.bak/
-venv.bak/
 .python-version
 
 # IDE specific files
@@ -38,37 +28,25 @@ venv.bak/
 *.swp
 *.swo
 .DS_Store
-.jbeval/
-output.txt
-
-# Testing
-.coverage
-htmlcov/
-.pytest_cache/
-.mypy_cache/
-
-# Secrets
-*.pem
-*.key
-secrets/
-
-# Workspace session notes (per-session, not versioned)
-**/.session-notes
-
-# Per-project learning data (generated at runtime)
-.claude/learning/
-.claude/rules/learned-instincts.md
-
-# Internal docs (not for distribution)
-/docs/01-kailash-vibe-cc-internals/
-
-# Generated script outputs (sdk-users examples)
-**/scripts/data/
-**/scripts/outputs/
-**/scripts/*.log
-
-# Claude Code local settings (not for commit)
-.claude/settings.local.json
 
 # macOS
 __MACOSX/
+
+# Local AI/tooling (COC framework artifacts)
+.claude/
+.coc-sync-marker
+
+# Templates / non-submission artifacts
+workspaces/_template/
+tests/sdk/
+deploy/
+mcp-configs/
+scripts/
+specs/
+
+# Build / deployment artifacts
+Dockerfile
+.dockerignore
+
+# Session notes (per-session, not versioned)
+.session-notes

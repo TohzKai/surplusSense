@@ -32,14 +32,39 @@ Complete this checklist before submitting. All items must be verified.
 ## Submission Hygiene
 
 - [ ] `.env` NOT committed to repository (contains only placeholders, already in .gitignore)
-- [ ] `.claude/settings.local.json` NOT in final package
-- [ ] `.git/` folder NOT in final zip
+- [ ] `.claude/` folder NOT tracked (removed from git, added to .gitignore)
+- [ ] `.git/` folder NOT in final zip (local .git is preserved for the professor's inspection)
 - [ ] `__MACOSX/` folder NOT in final zip
 - [ ] `.DS_Store` files NOT in final zip
 - [ ] No API keys or secrets in any submitted file
 - [ ] `outputs/surplus_model.pkl` included (trained model)
 - [ ] `data/synthetic_fnb_data.csv` included (training data)
 - [ ] `outputs/model_results.csv` and `outputs/metrics_summary.csv` included
+
+## GitHub Submission
+
+- [ ] `python -m pytest -q` returns `63 passed`
+- [ ] `python -m py_compile app/streamlit_app.py src/*.py` passes
+- [ ] `git status` is clean (all noisy files removed or ignored)
+- [ ] README review path is clear
+- [ ] Executive report is under 4 pages when rendered
+- [ ] COC decision log exists and shows chosen/rejected options
+- [ ] v6 validation is the only final grading self-assessment
+- [ ] Team-project technique-family distinction is closed using WanderLess recommender/optimization comparison
+- [ ] Final MVP is clearly merchant-side decision cockpit
+- [ ] No final-facing file claims marketplace, payment, POS, delivery, or consumer app as final MVP
+- [ ] Local/noisy files are removed or ignored:
+  - `.claude/`
+  - `.env`
+  - `.pytest_cache/`
+  - `__pycache__/`
+  - `__MACOSX/`
+  - `workspaces/_template/`
+  - `tests/sdk/`
+  - `scripts/`
+  - `deploy/`
+  - `mcp-configs/`
+  - `specs/`
 
 ## Grading Alignment
 
