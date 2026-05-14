@@ -1,5 +1,7 @@
 # Dynamic Pricing Specification
 
+> **Phase 2 — Not part of final submitted MVP.** Dynamic real-time pricing is Phase 2. The submitted MVP uses the 10-tier static discount recommendation engine documented in `src/recommendation_engine.py`.
+
 ## Overview
 
 Dynamic pricing optimizes surplus food prices in real-time to maximize sell-through rate while respecting merchant-defined price floors and maintaining consumer trust through transparency.

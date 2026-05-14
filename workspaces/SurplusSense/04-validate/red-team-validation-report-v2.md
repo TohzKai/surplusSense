@@ -1,5 +1,7 @@
 # Red Team Validation Report — SurplusSense MVP (Round 2)
 
+> **Superseded by grading-self-assessment-v6-final.md and red-team-validation-report-v4.md.** These later reports reflect the final SurplusSense merchant-cockpit repositioning and metric reconciliation.
+
 **Date**: 2026-04-25 (late session)
 **Scope**: MVP Implementation Re-validation
 **Status**: **PASS** — Core functionality validated

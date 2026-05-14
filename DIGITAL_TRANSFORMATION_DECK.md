@@ -176,5 +176,5 @@ This is the key slide for evaluator skepticism. A "prototype" is a demo artifact
 | `COC_DECISION_LOG.md`            | Prototype-to-product decision journey |
 | `DIGITAL_TRANSFORMATION_DECK.md` | This deck                             |
 | `src/`                           | Reproducible ML pipeline              |
-| `tests/unit/`                    | 59 passing unit tests                 |
+| `tests/unit/`                    | 63 passing unit tests                 |
 | `outputs/`                       | Model outputs and evaluation results  |

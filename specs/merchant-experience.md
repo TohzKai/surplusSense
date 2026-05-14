@@ -1,5 +1,7 @@
 # Merchant Experience Specification
 
+> **Phase 2 — Not part of final submitted MVP.** Multi-merchant dashboard is Phase 2. The submitted MVP is the single-merchant decision cockpit in Streamlit.
+
 ## Overview
 
 Merchant-facing dashboard for managing surplus listings, processing orders, and viewing analytics. Web-based interface (responsive, mobile-friendly for tablet use in kitchen).

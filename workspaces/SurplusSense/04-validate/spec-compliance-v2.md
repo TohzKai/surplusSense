@@ -1,5 +1,7 @@
 # Spec Compliance Verification Report
 
+> **Superseded by grading-self-assessment-v6-final.md.** This report reflects an earlier project state before the final merchant-cockpit repositioning.
+
 **Project:** SurplusSense
 **Executive Report:** `docs/EXECUTIVE_REPORT.md`
 **Verification Date:** 2026-05-13

@@ -4,6 +4,8 @@
 **Date**: 2026-04-26
 **Supersedes**: journal/0016-GAP-missing-unit-tests-src-modules.md (gap identified, now resolved)
 
+> **Supersession note:** Unit test count has since been reconciled to 63 passing unit tests. This journal entry records the decision to implement unit tests; the current test count is confirmed in `grading-self-assessment-v6-final.md` and by running `pytest tests/unit/ -q`.
+
 ## Context
 
 Journal 0016 (dated 2026-04-25) identified that no dedicated unit tests existed for the project's ML modules in `src/`. The finding was correct at the time — tests were verified via manual execution only, with no regression protection.

@@ -1,5 +1,7 @@
 # Payments Specification
 
+> **Phase 2 — Not part of final submitted MVP.** Payment processing is a Phase 2 extension. The submitted MVP is the merchant-side decision cockpit only. See `grading-self-assessment-v6-final.md` for the final MVP scope.
+
 ## Overview
 
 Payment processing via Stripe for consumer purchases and merchant payouts. QR-based pickup confirmation flow.

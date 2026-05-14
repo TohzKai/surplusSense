@@ -1,5 +1,7 @@
 # Marketplace Specification
 
+> **Phase 2 — Not part of final submitted MVP.** The consumer marketplace is a Phase 2 extension. The submitted MVP is the merchant-side decision cockpit only. See `grading-self-assessment-v6-final.md` for the final MVP scope.
+
 ## Overview
 
 The marketplace connects merchant surplus listings with consumer demand. Core flows: listing creation (predicted and manual), search and discovery, purchase, and fulfillment.

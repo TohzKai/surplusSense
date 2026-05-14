@@ -1,5 +1,7 @@
 # Test Coverage Verification Report v2
 
+> **Superseded by grading-self-assessment-v6-final.md.** Test collection results reflect an earlier project state; final test count is 63 unit tests per `pytest tests/unit/ -q`.
+
 **Date:** 2026-05-13
 **Project:** SurplusSense
 

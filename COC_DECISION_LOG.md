@@ -275,7 +275,7 @@ This decision audit is included to make my original contribution explicit. The A
 
 ## 12. ML Technique Family Declaration
 
-SurplusSense foregrounds **supervised machine learning** through XGBoost surplus prediction, combined with deterministic recommendation and food-safety rules. This makes the individual assignment's technique family explicit as supervised learning; the separate team project should be evidenced separately as using a different ML technique family to satisfy the MGMT655 requirement.
+SurplusSense foregrounds **supervised machine learning** through XGBoost surplus prediction, combined with deterministic recommendation and food-safety rules. This differs from the team project, WanderLess, which foregrounds recommender systems and optimization through hybrid tourist-guide matching, TruncatedSVD collaborative filtering, content-based compatibility scoring, and itinerary optimization.
 
 The supervised regression approach (XGBoost predicting surplus units) was chosen for temporal holdout performance and explainability, not as the only viable ML technique for the problem space.
 

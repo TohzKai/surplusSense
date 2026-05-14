@@ -1,5 +1,7 @@
 # Consumer Experience Specification
 
+> **Phase 2 — Not part of final submitted MVP.** Consumer-facing mobile app is a Phase 2 extension. The submitted MVP is the merchant-side decision cockpit only.
+
 ## Overview
 
 Consumer-facing mobile app (Flutter, iOS + Android) for discovering, purchasing, and picking up surplus food deals. Focus on fast, personalized deal discovery and a delightful purchase experience.

@@ -1,5 +1,7 @@
 # Notifications Specification
 
+> **Phase 2 — Not part of final submitted MVP.** Push notification system is Phase 2. The submitted MVP is the Streamlit decision cockpit with on-screen recommendations only.
+
 ## Overview
 
 Push notification system for timely, relevant alerts to merchants and consumers. Notification timing optimized by ML based on user engagement patterns.
