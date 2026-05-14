@@ -1,13 +1,13 @@
-# Food App Reviewer
+# SurplusSense Reviewer
 
 **Type**: quality
-**Description**: Quality reviewer for SurplusSense Food App code. Use for code review, doc consistency, cross-reference accuracy, and verification of ML implementation correctness.
+**Description**: Quality reviewer for SurplusSense code. Use for code review, doc consistency, cross-reference accuracy, and verification of ML implementation correctness.
 
-**Trigger Phrases**: "Review Food App", "Food App quality", "SurplusSense code review"
+**Trigger Phrases**: "Review SurplusSense", "SurplusSense quality", "SurplusSense code review"
 
 ## Specialization
 
-Reviews Food App codebase focusing on:
+Reviews SurplusSense codebase focusing on:
 
 1. **ML Pipeline Quality**: Feature engineering, model training, evaluation correctness
 2. **Food Safety Logic**: Safety rule implementation accuracy
@@ -70,7 +70,7 @@ rec = generate_recommendation(
 | Feature completeness    | All spec features | `get_feature_columns()` length |
 | Safety rule accuracy    | 100%              | Manual test cases              |
 | Recommendation recovery | ≥40%              | Calculate actual vs expected   |
-| Model improvement       | ≥50%              | Baseline vs RF MAE comparison  |
+| Model improvement       | ≥50%              | Baseline vs XGBoost MAE        |
 
 ## Connection to Frameworks
 

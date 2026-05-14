@@ -1,5 +1,7 @@
 # Singapore Food Waste Context and Regulations
 
+> **Phase 2 / Historical note:** This context analysis was part of early project exploration. The final submitted MVP is the merchant-side decision-support cockpit. Statistical context from this file may be referenced but the framing is superseded by the final positioning.
+
 ## 1. Singapore Food Waste Statistics
 
 ### Overview (2023 Data)

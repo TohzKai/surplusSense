@@ -1,5 +1,7 @@
 # Platform Model Analysis
 
+> **Phase 2 / Historical note:** This analysis was part of early marketplace exploration. The final submitted MVP is the merchant-side decision-support cockpit, not a two-sided marketplace. This file is retained as process evidence.
+
 ## Platform Model Thinking
 
 The Food App operates as a **two-sided marketplace platform** enabling direct transactions between food businesses with surplus and consumers seeking affordable meals.

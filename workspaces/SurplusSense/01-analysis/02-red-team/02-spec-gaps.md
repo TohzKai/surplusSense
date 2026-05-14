@@ -1,5 +1,7 @@
 # Spec Gap Analysis: Red Team Findings
 
+> **Phase 2 / Historical note:** This analysis was part of early marketplace exploration. The final submitted MVP is the merchant-side decision-support cockpit. This spec gap analysis is retained as process evidence.
+
 ## Executive Summary
 
 The specification suite (13 files) provides solid coverage of the core marketplace, ML models, and user experiences. However, the audit found **44 gaps, inconsistencies, or missing details** across 7 severity categories. The most critical findings are: (1) missing database entities and tables for several documented features, (2) API contract inconsistencies between spec files, (3) notification data model entirely absent, (4) several brief objectives and research requirements unaccounted for in specs, and (5) critical edge cases in concurrent operations and food safety that lack implementation-level detail.

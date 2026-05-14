@@ -1,5 +1,7 @@
 # Value Propositions and Unique Selling Points
 
+> **Phase 2 / Historical note:** This document was part of early marketplace exploration. The final submitted MVP value proposition is merchant-side decision support as documented in `docs/EXECUTIVE_REPORT.md`. This file is retained as process evidence.
+
 ## Core Value Propositions
 
 ### For Merchants (Food Businesses)

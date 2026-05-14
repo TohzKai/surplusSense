@@ -1,5 +1,7 @@
 # Analysis Gap Report: Food Waste Reduction Marketplace
 
+> **Phase 2 / Historical note:** This analysis was part of early marketplace exploration. The final submitted MVP is the merchant-side decision-support cockpit. This gap analysis is retained as process evidence.
+
 **Audit date**: 2026-04-17
 **Scope**: All files in `01-analysis/01-research/` (5 documents)
 **Severity scale**: CRITICAL / MAJOR / SIGNIFICANT / MINOR

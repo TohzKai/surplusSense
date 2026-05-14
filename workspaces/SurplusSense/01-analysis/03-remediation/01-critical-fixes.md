@@ -1,5 +1,7 @@
 # Analysis Remediation: Critical and Major Gap Fixes
 
+> **Phase 2 / Historical note:** This remediation was part of early marketplace exploration. The final submitted MVP is the merchant-side decision-support cockpit. This file is retained as process evidence.
+
 **Date**: 2026-04-17
 **Trigger**: Red team reports 01-analysis-gaps.md (39 findings) and 02-spec-gaps.md (48 findings)
 

@@ -1,5 +1,7 @@
 # DISCOVERY: food-app-pricing.md had ALL discount tiers inverted
 
+> **Historical note:** This discovery was made during skill codification. The skill files (`food-app-pricing.md`) still use the "Food App" naming but contain SurplusSense content. This entry is retained as process evidence.
+
 **Date:** 2026-04-30
 **Type:** DISCOVERY
 **Session:** /codify session 2026-04-30

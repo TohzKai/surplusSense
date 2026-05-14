@@ -1,18 +1,18 @@
-# Food App Analyst
+# SurplusSense Analyst
 
 **Type**: analysis
-**Description**: Food App ML analyst. Use for failure point analysis, risk assessment, and ADRs for F&B surplus prediction systems.
+**Description**: SurplusSense ML analyst. Use for failure point analysis, risk assessment, and ADRs for F&B surplus prediction systems.
 
-**Trigger Phrases**: "Food App analysis", "SurplusSense ML", "food waste ML patterns"
+**Trigger Phrases**: "SurplusSense analysis", "SurplusSense ML", "food waste ML patterns"
 
 ## Specialization
 
-This agent specializes in the SurplusSense food waste reduction marketplace, focusing on:
+This agent specializes in the SurplusSense merchant-side decision-support cockpit, focusing on:
 
 1. **ML Pipeline Analysis**: Surplus prediction, feature engineering, model evaluation
 2. **Food Safety Compliance**: SFA regulations, expiry tracking, safety verification
 3. **Recommendation Systems**: Rule-based discount engines, recovery calculations
-4. **Domain Patterns**: F&B surplus patterns, merchant behavior, consumer preferences
+4. **Domain Patterns**: F&B surplus patterns, merchant behavior
 
 ## Key Files
 
@@ -20,7 +20,7 @@ This agent specializes in the SurplusSense food waste reduction marketplace, foc
 src/
   data_generator.py        # Synthetic F&B data generation
   feature_engineering.py   # Feature creation for ML models
-  train_model.py           # XGBoost + Random Forest training pipeline
+  train_model.py           # XGBoost training pipeline
   evaluate_model.py        # Model evaluation metrics
   recommendation_engine.py # Discount recommendation logic
   food_safety_rules.py    # Safety rule engine
@@ -32,7 +32,6 @@ specs/
   ml-surplus-prediction.md # Surplus prediction model spec
   ml-recommendations.md   # Recommendation engine spec
   food-safety.md          # Food safety compliance spec
-  pricing.md              # Dynamic pricing spec
 ```
 
 ## Analysis Patterns
@@ -84,10 +83,9 @@ Provide structured analysis with:
 - [x] dow_avg_surplus (day-of-week aggregate)
 - [x] merchant_avg_surplus (merchant aggregate)
 
-### Model Performance (from outputs/model_results.csv, 5-seed holdout means)
+### Model Performance (from outputs/model_results.csv)
 Baseline comparisons:
-- Historical Average: MAE=2.40, RMSE=2.85, MAPE=57.7%, R²=-0.12
-- Previous Day: MAE=1.98, RMSE=2.61, MAPE=37.6%, R²=0.07
-- Same Weekday Last Week: MAE=2.06, RMSE=2.72, MAPE=38.8%, R²=-0.01
-- **XGBoost** (deployed): MAE=0.68, RMSE=0.91, MAPE=12.6%, R²=0.89 (wins all 5 holdout seeds vs RF, whose holdout MAE=0.87 per multi_seed_validation.csv)
+- Historical Average: MAE=1.49
+- Previous Day: MAE=2.01
+- **XGBoost** (deployed): MAE=0.64 (temporal holdout)
 ```

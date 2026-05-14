@@ -1,5 +1,7 @@
 # DECISION: Codified Food App ML Patterns
 
+> **Historical note:** "Food App" was the early working title. The project was later renamed to SurplusSense. The agents and skills referenced in this entry still exist (in `.claude/agents/project/` and `.claude/skills/project/`) but should be read as SurplusSense project artifacts.
+
 **Type**: DECISION
 **Date**: 2026-04-26
 **Status**: Closed

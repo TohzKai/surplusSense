@@ -1,5 +1,7 @@
 # ML Architecture Design
 
+> **Phase 2 / Historical note:** This architecture document was part of early marketplace exploration. The final submitted MVP uses XGBoost surplus prediction as documented in `src/train_model.py` and `src/feature_engineering.py`. This file is retained as process evidence.
+
 ## Overview
 
 The platform requires four ML capabilities, each addressing a distinct business problem. This document specifies the architecture for each, the overall pipeline, data requirements, and an implementation roadmap appropriate for an SMU MBA ML individual project with startup exploration intent.

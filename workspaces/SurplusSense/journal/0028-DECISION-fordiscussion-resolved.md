@@ -21,6 +21,8 @@ tags:
   ]
 ---
 
+> **Historical note:** This journal was written during early project exploration under the "Food App" working title. The project was later renamed to SurplusSense and narrowed to a merchant-side decision-support cockpit. This entry is retained as process evidence.
+
 # For-Discussion Questions — Resolved Decisions
 
 Resolves all 12 open "For Discussion" questions from journals 0001–0004. Each question is answered and the resolution is recorded here as the canonical decision.

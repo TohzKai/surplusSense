@@ -1,4 +1,4 @@
-# Food App Safety Rules
+# SurplusSense Safety Rules
 
 SurplusSense food safety rules for SFA compliance in Singapore.
 

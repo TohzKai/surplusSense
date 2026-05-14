@@ -1,5 +1,7 @@
 # Competitive Landscape Analysis
 
+> **Phase 2 / Historical note:** This analysis was part of early marketplace exploration. The final submitted MVP is the merchant-side decision-support cockpit, not a consumer marketplace. Competitive landscape framing from this file is superseded by `workspaces/SurplusSense/01-analysis/04-final-positioning.md` and `grading-self-assessment-v6-final.md`.
+
 ## Executive Summary
 
 The food waste reduction app market is growing globally but remains fragmented in Southeast Asia. Singapore has one direct competitor (TreatSure) with limited market penetration. No existing platform combines marketplace functionality with ML-driven surplus prediction, dynamic pricing, and prescriptive waste analytics — creating a clear differentiation opportunity.

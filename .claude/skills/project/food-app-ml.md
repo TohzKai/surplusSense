@@ -1,10 +1,10 @@
-# Food App ML Pipeline
+# SurplusSense ML Pipeline
 
-SurplusSense ML pipeline patterns for surplus prediction and recommendation systems.
+SurplusSense merchant-side decision-support ML pipeline patterns for surplus prediction.
 
 ## Feature Engineering
 
-### Key Features (47 total after one-hot encoding)
+### Key Features (46 total after one-hot encoding)
 
 **Time Features:**
 
@@ -27,14 +27,13 @@ SurplusSense ML pipeline patterns for surplus prediction and recommendation syst
 
 - `merchant_avg_surplus`, `merchant_avg_surplus_rate`, `merchant_surplus_std`
 - `category_avg_surplus`, `category_avg_surplus_rate`
-- `type_avg_surplus`, `type_avg_surplus_rate`
+- `dow_avg_surplus` (day-of-week expanding window aggregate)
 
 **Demand Features:**
 
-- `dow_avg_sold`, `dow_avg_surplus`
-- `production_vs_merchant_avg`, `weekend_promotion`
+- `dow_avg_sold`, `production_vs_merchant_avg`, `weekend_promotion`
 
-**After one-hot encoding** (pd.get_dummies): 19 additional columns from product_category (13), merchant_type (3), storage_type (3). Total: 47 features.
+**After one-hot encoding** (pd.get_dummies): additional columns from product_category, merchant_type, storage_type. Total: 46 features.
 
 ## Model Training
 
@@ -58,25 +57,15 @@ model = XGBRegressor(
 )
 ```
 
-### Baseline Models (5-seed holdout means)
+### Baseline Models (Temporal holdout — last 20% of dates)
 
-| Model                  | Description                                                     | MAE      | RMSE     | MAPE      | R²       |
-| ---------------------- | --------------------------------------------------------------- | -------- | -------- | --------- | -------- |
-| Historical Average     | Expanding mean per merchant+category                            | 2.40     | 2.85     | 57.7%     | -0.12    |
-| Previous Day           | Lag 1 surplus                                                   | 1.98     | 2.61     | 37.6%     | 0.07     |
-| Same Weekday Last Week | Lag 7 surplus                                                   | 2.06     | 2.72     | 38.8%     | -0.01    |
-| **XGBoost** (deployed) | 250 trees, depth=13, lr=0.295, subsample=0.616, colsample=0.921 | **0.68** | **0.91** | **12.6%** | **0.89** |
+| Model                  | Temporal Holdout MAE |
+| ---------------------- | -------------------- |
+| Historical Average     | 1.49                 |
+| Previous Day           | 2.01                 |
+| **XGBoost** (deployed) | **0.64**             |
 
-**Improvement vs baselines:** 72% vs Historical Average, 66% vs Previous Day, 67% vs Same Weekday Last Week.
-
-### Random Forest (Rejected)
-
-Tuned RF (n_est=93, depth=26, min_samples_split=27) was evaluated but lost the 5-seed random holdout comparison:
-
-- RF holdout MAE: 0.8675 ± 0.044
-- XGBoost holdout MAE: 0.6824 ± 0.021
-- RF won TimeSeriesSplit CV (1.07 vs 1.22) but random holdout is grading-relevant metric
-- Decision documented in: `workspaces/Food App/journal/0019-DECISION-xgboost-selected-over-rf.md`
+**Improvement vs baselines:** 57% vs Historical Average.
 
 ### Model Evaluation
 
@@ -109,11 +98,9 @@ def calculate_metrics(y_true, y_pred):
 
 | Rank | Feature                    | Importance |
 | ---- | -------------------------- | ---------- |
-| 1    | dow_avg_surplus            | 49.5%      |
-| 2    | production_vs_merchant_avg | 34.0%      |
-| 3    | merchant_avg_surplus_rate  | 1.4%       |
-| 4    | category_avg_surplus_rate  | 1.2%       |
-| 5    | dow_avg_sold               | 1.1%       |
+| 1    | dow_avg_surplus            | ~50%       |
+| 2    | production_vs_merchant_avg | ~34%       |
+| 3    | merchant_avg_surplus_rate  | ~1.4%      |
 
 ## Model Lifecycle
 

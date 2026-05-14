@@ -1,4 +1,4 @@
-# Food App Pricing
+# SurplusSense Pricing
 
 SurplusSense discount recommendation and revenue recovery calculation patterns.
 

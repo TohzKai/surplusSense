@@ -10,6 +10,8 @@ phase: analyze
 tags: [scope, ml, timeline, trade-off, mvp]
 ---
 
+> **Historical note:** This journal was written during early project exploration under the "Food App" working title. The project was later renamed to SurplusSense and narrowed to a merchant-side decision-support cockpit. This entry is retained as process evidence.
+
 # Course Project Scope vs Startup Ambition
 
 ## Decision

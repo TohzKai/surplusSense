@@ -1,5 +1,7 @@
 # CONNECTION: Stale model metrics synced to XGBoost deployed state
 
+> **Supersession note:** This journal entry was written when the project used the working title "Food App" and references `workspaces/Food App/` paths. That workspace was renamed to `workspaces/SurplusSense/`. References to `workspaces/Food App/` in this entry are historical workspace paths. The content is retained as process evidence.
+
 **Date**: 2026-04-26
 **Type**: CONNECTION
 **Scope**: Documentation audit and correction
