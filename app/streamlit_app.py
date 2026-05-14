@@ -782,6 +782,124 @@ def create_prediction_features(df, merchant_id, category, date=None):
     return template
 
 
+def get_selected_record_or_fallback(df, merchant_id, category, product, selected_date=None):
+    """
+    Return a safe record-like dict for the selected merchant/category/product/date.
+
+    Fallback order:
+    1. Exact merchant + category + product + date match
+    2. Exact merchant + category + product (any date), tail(1)
+    3. Exact merchant + category (any product/date), tail(1)
+    4. Category + product global average row
+    5. Merchant global average row
+    6. Hardcoded safe default (all numeric fields set to sensible defaults)
+
+    Also returns a fallback_label string describing which fallback was used.
+    """
+    # Guard: if DataFrame is empty or has no columns, return hardcoded defaults immediately
+    if df is None or len(df.columns) == 0 or len(df) == 0:
+        return {
+            "surplus_quantity": 5.0,
+            "preparation_time": 30,
+            "holding_time_hours": 2.0,
+            "storage_type": "Refrigerated",
+            "shelf_life_hours": 48.0,
+            "original_price": 10.0,
+            "weekend_flag": False,
+            "promotion_flag": False,
+        }, "fallback: hardcoded defaults"
+
+    SAFE_DEFAULTS = {
+        "surplus_quantity": 5.0,
+        "preparation_time": 30,
+        "holding_time_hours": 2.0,
+        "storage_type": "Refrigerated",
+        "shelf_life_hours": 48.0,
+        "original_price": 10.0,
+        "weekend_flag": False,
+        "promotion_flag": False,
+    }
+
+    if selected_date is not None:
+        exact = df[
+            (df["merchant_id"] == merchant_id) &
+            (df["product_category"] == category) &
+            (df["product_name"] == product) &
+            (df["date"] == selected_date)
+        ]
+        if len(exact) > 0:
+            return exact.iloc[-1].to_dict(), "exact merchant/category/product/date"
+
+    mcp = df[
+        (df["merchant_id"] == merchant_id) &
+        (df["product_category"] == category) &
+        (df["product_name"] == product)
+    ]
+    if len(mcp) > 0:
+        return mcp.tail(1).iloc[-1].to_dict(), "fallback: merchant/category/product (latest date)"
+
+    mc = df[
+        (df["merchant_id"] == merchant_id) &
+        (df["product_category"] == category)
+    ]
+    if len(mc) > 0:
+        return mc.tail(1).iloc[-1].to_dict(), "fallback: merchant/category (latest record)"
+
+    cp = df[df["product_category"] == category]
+    if len(cp) > 0:
+        avg = cp.mean(numeric_only=True)
+        result = SAFE_DEFAULTS.copy()
+        result["surplus_quantity"] = float(avg.get("surplus_quantity", 5.0))
+        result["original_price"] = float(avg.get("original_price", 10.0))
+        result["preparation_time"] = int(avg.get("preparation_time", 30))
+        result["holding_time_hours"] = float(avg.get("holding_time_hours", 2.0))
+        result["shelf_life_hours"] = float(avg.get("shelf_life_hours", 48.0))
+        if "storage_type" in cp.columns:
+            mode_vals = cp["storage_type"].mode()
+            result["storage_type"] = mode_vals.iloc[0] if len(mode_vals) > 0 else "Refrigerated"
+        return result, "fallback: category average"
+
+    m = df[df["merchant_id"] == merchant_id]
+    if len(m) > 0:
+        avg = m.mean(numeric_only=True)
+        result = SAFE_DEFAULTS.copy()
+        result["surplus_quantity"] = float(avg.get("surplus_quantity", 5.0))
+        result["original_price"] = float(avg.get("original_price", 10.0))
+        result["preparation_time"] = int(avg.get("preparation_time", 30))
+        result["holding_time_hours"] = float(avg.get("holding_time_hours", 2.0))
+        result["shelf_life_hours"] = float(avg.get("shelf_life_hours", 48.0))
+        if "storage_type" in m.columns:
+            mode_vals = m["storage_type"].mode()
+            result["storage_type"] = mode_vals.iloc[0] if len(mode_vals) > 0 else "Refrigerated"
+        return result, "fallback: merchant average"
+
+    if len(df) > 0:
+        avg = df.mean(numeric_only=True)
+        result = SAFE_DEFAULTS.copy()
+        result["surplus_quantity"] = float(avg.get("surplus_quantity", 5.0))
+        result["original_price"] = float(avg.get("original_price", 10.0))
+        result["preparation_time"] = int(avg.get("preparation_time", 30))
+        result["holding_time_hours"] = float(avg.get("holding_time_hours", 2.0))
+        result["shelf_life_hours"] = float(avg.get("shelf_life_hours", 48.0))
+        if "storage_type" in df.columns:
+            mode_vals = df["storage_type"].mode()
+            result["storage_type"] = mode_vals.iloc[0] if len(mode_vals) > 0 else "Refrigerated"
+        return result, "fallback: global average"
+
+    return SAFE_DEFAULTS.copy(), "fallback: hardcoded defaults"
+
+
+def _safe_get(record, key, default):
+    """Safely get a value from a dict-like record, returning default if key missing."""
+    try:
+        val = record[key]
+        if pd.isna(val):
+            return default
+        return val
+    except (KeyError, TypeError, ValueError):
+        return default
+
+
 def main():
     # Header — sticky app bar
     st.markdown("""
@@ -904,6 +1022,13 @@ def main():
         </div>
         """, unsafe_allow_html=True)
 
+    # Get selected record — robust with multiple fallback levels (never raises IndexError)
+    # This must be computed BEFORE the early prediction block because cold-start prediction
+    # and safety check use record values.
+    record, record_fallback_label = get_selected_record_or_fallback(
+        df, merchant_id, selected_category, selected_product, selected_date
+    )
+
     # Compute surplus prediction early (before Impact Today and Executive Decision Summary)
     selected_dt = datetime.strptime(selected_date, "%Y-%m-%d")
     is_weekend = selected_dt.weekday() >= 5
@@ -952,39 +1077,26 @@ def main():
                     predictions = model.predict(X)
                     avg_prediction = predictions.mean()
                 else:
-                    avg_prediction = record["surplus_quantity"] * 1.1
+                    # Safe fallback — no model data; use global category mean surplus
+                    cat_mean = df[df["product_category"] == selected_category]["surplus_quantity"].mean() if len(df[df["product_category"] == selected_category]) > 0 else 5.0
+                    avg_prediction = float(cat_mean) * 1.1
             else:
-                avg_prediction = record["surplus_quantity"] * 1.1
+                cat_mean = df[df["product_category"] == selected_category]["surplus_quantity"].mean() if len(df[df["product_category"] == selected_category]) > 0 else 5.0
+                avg_prediction = float(cat_mean) * 1.1
         else:
-            avg_prediction = record["surplus_quantity"] * 1.1
+            cat_mean = df[df["product_category"] == selected_category]["surplus_quantity"].mean() if len(df[df["product_category"] == selected_category]) > 0 else 5.0
+            avg_prediction = float(cat_mean) * 1.1
         cold_start_note = None
 
     avg_prediction = round(avg_prediction, 1)
 
-    # Get selected record (use iloc[-1] as fallback for safety)
-    filtered_df = df[
-        (df["merchant_id"] == merchant_id) &
-        (df["product_category"] == selected_category) &
-        (df["product_name"] == selected_product) &
-        (df["date"] == selected_date)
-    ]
-    if len(filtered_df) > 0:
-        record = filtered_df.iloc[-1]
-    else:
-        # Fallback to most recent record for this merchant/category
-        fallback_df = df[
-            (df["merchant_id"] == merchant_id) &
-            (df["product_category"] == selected_category)
-        ].tail(1)
-        record = fallback_df.iloc[-1]
-
-    # Compute safety and recommendation early so Executive Decision Summary can appear near the top
+    # Compute safety and recommendation for Executive Decision Summary
     safety_result = check_item_safety(
         product_category=selected_category,
-        preparation_time=record["preparation_time"],
-        holding_time_hours=record["holding_time_hours"],
-        storage_type=record["storage_type"],
-        shelf_life_hours=record["shelf_life_hours"],
+        preparation_time=_safe_get(record, "preparation_time", 30),
+        holding_time_hours=_safe_get(record, "holding_time_hours", 2.0),
+        storage_type=_safe_get(record, "storage_type", "Refrigerated"),
+        shelf_life_hours=_safe_get(record, "shelf_life_hours", 48.0),
     )
 
     recommendation = generate_recommendation(
@@ -992,12 +1104,12 @@ def main():
         merchant_type=merchant_type,
         product_category=selected_category,
         product_name=selected_product,
-        original_price=record["original_price"],
+        original_price=_safe_get(record, "original_price", 10.0),
         predicted_surplus=avg_prediction,
-        shelf_life_hours=record["shelf_life_hours"],
-        preparation_time=record["preparation_time"],
-        storage_type=record["storage_type"],
-        holding_time_hours=record["holding_time_hours"],
+        shelf_life_hours=_safe_get(record, "shelf_life_hours", 48.0),
+        preparation_time=_safe_get(record, "preparation_time", 30),
+        storage_type=_safe_get(record, "storage_type", "Refrigerated"),
+        holding_time_hours=_safe_get(record, "holding_time_hours", 2.0),
         current_time=current_time_str,
         safety_status=safety_result.status,
         safety_flags=safety_result.flags,
@@ -1019,8 +1131,8 @@ def main():
         action_color = "#10B981"
 
     surplus_qty = recommendation['predicted_surplus']
-    shelf_life = record['shelf_life_hours']
-    holding = record['holding_time_hours']
+    shelf_life = _safe_get(record, 'shelf_life_hours', 48.0)
+    holding = _safe_get(record, 'holding_time_hours', 2.0)
     remaining = shelf_life - holding
     recovery = recommendation['estimated_merchant_recovery']
     original = recommendation['original_value']
@@ -1163,7 +1275,7 @@ def main():
             st.markdown(f'''
             <div class="card">
                 <div class="metric-label">Today's Actual</div>
-                <div class="metric-value">{record['surplus_quantity']}</div>
+                <div class="metric-value">{_safe_get(record, 'surplus_quantity', 5.0)}</div>
                 <div class="metric-label">units</div>
             </div>''', unsafe_allow_html=True)
 
@@ -1174,8 +1286,8 @@ def main():
         st.write(f"**Category:** {selected_category}")
         st.write(f"**Product:** {selected_product}")
         st.write(f"**Date:** {selected_date}")
-        st.write(f"**Weekend:** {'Yes' if record['weekend_flag'] else 'No'}")
-        st.write(f"**Promotion:** {'Yes' if record['promotion_flag'] else 'No'}")
+        st.write(f"**Weekend:** {'Yes' if _safe_get(record, 'weekend_flag', False) else 'No'}")
+        st.write(f"**Promotion:** {'Yes' if _safe_get(record, 'promotion_flag', False) else 'No'}")
 
     # ===== MERCHANT PROFILE CARD — placed below Surplus Prediction, above Model Performance =====
     if clusters_df is not None and merchant_id in clusters_df["merchant_id"].values:
@@ -1330,7 +1442,7 @@ def main():
 
     # Hero card — main recommendation
     emoji = CATEGORY_EMOJI.get(selected_category, "🍽️")
-    savings = record["original_price"] - recommendation["discounted_price"]
+    savings = _safe_get(record, "original_price", 10.0) - recommendation["discounted_price"]
     st.markdown(f'''
     <div class="rec-hero">
         <div class="rec-hero-header">
@@ -1338,7 +1450,7 @@ def main():
                 <div class="rec-hero-label">{emoji} Recommended Discount</div>
                 <div class="rec-hero-discount">{recommendation['recommended_discount_pct']*100:.0f}%</div>
                 <div class="rec-hero-prices">
-                    <span class="rec-hero-original">SGD {record['original_price']:.2f}</span>
+                    <span class="rec-hero-original">SGD {_safe_get(record, 'original_price', 10.0):.2f}</span>
                     <span class="rec-hero-discounted">SGD {recommendation['discounted_price']:.2f}</span>
                 </div>
             </div>
@@ -1388,8 +1500,8 @@ def main():
         action_color = "#10B981"
 
     surplus_qty = recommendation['predicted_surplus']
-    shelf_life = record['shelf_life_hours']
-    holding = record['holding_time_hours']
+    shelf_life = _safe_get(record, 'shelf_life_hours', 48.0)
+    holding = _safe_get(record, 'holding_time_hours', 2.0)
     remaining = shelf_life - holding
     recovery = recommendation['estimated_merchant_recovery']
     original = recommendation['original_value']
@@ -1502,19 +1614,19 @@ def main():
             <div style="display: flex; flex-direction: column; gap: 12px;">
                 <div>
                     <div class="metric-label">Storage</div>
-                    <div style="font-size: 15px; color: var(--text-primary);">{record['storage_type']}</div>
+                    <div style="font-size: 15px; color: var(--text-primary);">{_safe_get(record, 'storage_type', 'Refrigerated')}</div>
                 </div>
                 <div>
                     <div class="metric-label">Shelf Life</div>
-                    <div style="font-size: 15px; color: var(--text-primary);">{record['shelf_life_hours']:.0f} hours</div>
+                    <div style="font-size: 15px; color: var(--text-primary);">{_safe_get(record, 'shelf_life_hours', 48.0):.0f} hours</div>
                 </div>
                 <div>
                     <div class="metric-label">Holding Time</div>
-                    <div style="font-size: 15px; color: var(--text-primary);">{record['holding_time_hours']:.1f} hours</div>
+                    <div style="font-size: 15px; color: var(--text-primary);">{_safe_get(record, 'holding_time_hours', 2.0):.1f} hours</div>
                 </div>
                 <div>
                     <div class="metric-label">Preparation</div>
-                    <div style="font-size: 15px; color: var(--text-primary);">{record['preparation_time']} min</div>
+                    <div style="font-size: 15px; color: var(--text-primary);">{_safe_get(record, 'preparation_time', 30)} min</div>
                 </div>
             </div>
         </div>
@@ -1535,7 +1647,7 @@ def main():
     preview_col1, preview_col2 = st.columns([1, 2])
 
     with preview_col1:
-        savings = record["original_price"] - recommendation["discounted_price"]
+        savings = _safe_get(record, "original_price", 10.0) - recommendation["discounted_price"]
         listing_html = f"""
 <div style="background: #FFFFFF; border-radius: 12px; overflow: hidden; max-width: 480px;">
   <div style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;">
@@ -1549,7 +1661,7 @@ def main():
     <div style="color: #111827; font-size: 24px; font-weight: 700; margin: 0 0 4px 0; line-height: 1.2;">{selected_product}</div>
     <div style="color: #6B7280; font-size: 14px; margin-bottom: 16px;">{selected_category}</div>
     <div style="margin-bottom: 16px;">
-      <span style="color: #9CA3AF; font-size: 14px; text-decoration: line-through; margin-right: 8px;">SGD {record["original_price"]:.2f}</span>
+      <span style="color: #9CA3AF; font-size: 14px; text-decoration: line-through; margin-right: 8px;">SGD {_safe_get(record, "original_price", 10.0):.2f}</span>
       <span style="color: #059669; font-size: 22px; font-weight: 700;">SGD {recommendation["discounted_price"]:.2f}</span>
     </div>
     <div style="color: #059669; font-size: 13px; font-weight: 600; margin-bottom: 16px;">You save SGD {savings:.2f}</div>
@@ -1564,12 +1676,12 @@ def main():
       </div>
       <div>
         <div style="color: #9CA3AF; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Storage</div>
-        <div style="color: #111827; font-size: 14px; font-weight: 600;">{record["storage_type"]}</div>
+        <div style="color: #111827; font-size: 14px; font-weight: 600;">{_safe_get(record, "storage_type", "Refrigerated")}</div>
       </div>
     </div>
     <div style="margin-bottom: 16px;">
       <div style="color: #9CA3AF; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Freshness</div>
-      <div style="color: #111827; font-size: 14px; font-weight: 600;">{record["shelf_life_hours"] - record["holding_time_hours"]:.0f}h remaining</div>
+      <div style="color: #111827; font-size: 14px; font-weight: 600;">{_safe_get(record, "shelf_life_hours", 48.0) - _safe_get(record, "holding_time_hours", 2.0):.0f}h remaining</div>
     </div>
     <div style="background: #ECFDF5; border-radius: 8px; padding: 12px;">
       <span style="color: #059669; font-weight: 600; font-size: 13px;">Consumer Tip:</span>
@@ -1598,12 +1710,12 @@ def main():
             "Value": [
                 selected_product,
                 f"{merchant_id} ({merchant_type})",
-                f"SGD {record['original_price']:.2f}",
+                f"SGD {_safe_get(record, 'original_price', 10.0):.2f}",
                 f"SGD {recommendation['discounted_price']:.2f}",
-                f"SGD {record['original_price'] - recommendation['discounted_price']:.2f}",
+                f"SGD {_safe_get(record, 'original_price', 10.0) - recommendation['discounted_price']:.2f}",
                 recommendation['recommended_pickup_window'],
-                record['storage_type'],
-                f"{record['shelf_life_hours'] - record['holding_time_hours']:.0f} hours",
+                _safe_get(record, 'storage_type', 'Refrigerated'),
+                f"{_safe_get(record, 'shelf_life_hours', 48.0) - _safe_get(record, 'holding_time_hours', 2.0):.0f} hours",
                 safety_result.status
             ]
         })
@@ -1630,7 +1742,7 @@ def main():
         sim_quantity = st.slider("Surplus Quantity", 0, 50, int(recommendation['predicted_surplus']))
 
     with sim_col3:
-        sim_price = st.number_input("Original Price (SGD)", 1.0, 50.0, record['original_price'], 0.5)
+        sim_price = st.number_input("Original Price (SGD)", 1.0, 50.0, _safe_get(record, 'original_price', 10.0), 0.5)
 
     # Calculate simulation
     original_value = sim_price * sim_quantity
