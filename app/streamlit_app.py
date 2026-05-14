@@ -1222,6 +1222,7 @@ def main():
 
     with col1:
         st.markdown(f'<div class="section-header">{ICONS["target"]} Surplus Prediction</div>', unsafe_allow_html=True)
+        st.caption("Updates with the selected merchant, product, date, and time.")
 
         # Determine if weekend based on selected date
         selected_dt = datetime.strptime(selected_date, "%Y-%m-%d")
@@ -1359,7 +1360,8 @@ def main():
             st.metric("XGBoost RMSE", f"{xgb_rmse:.2f}", "Temporal holdout")
 
         st.caption(
-            "Primary metric uses temporal holdout evaluation (last 20% of dates, sorted by date). "
+            "Model performance is calculated on the final temporal holdout set and remains fixed as a global reliability benchmark. "
+            "Sidebar selections change the case-level prediction, recommendation, safety status, and recovery estimate. "
             "Earlier 5-seed mean evaluation (MAE 0.68) is retained in model logs for robustness checks."
         )
 
