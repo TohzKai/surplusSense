@@ -904,6 +904,63 @@ def main():
         </div>
         """, unsafe_allow_html=True)
 
+    # Compute surplus prediction early (before Impact Today and Executive Decision Summary)
+    selected_dt = datetime.strptime(selected_date, "%Y-%m-%d")
+    is_weekend = selected_dt.weekday() >= 5
+
+    if cold_start_mode:
+        cold_result = predict_surplus_cold_start(
+            merchant_type=merchant_type,
+            product_category=selected_category,
+            avg_daily_production=None,
+            dominant_storage=record.get("storage_type", "Refrigerated"),
+            is_weekend=is_weekend,
+        )
+        avg_prediction = cold_result["predicted_surplus"]
+        cold_start_note = cold_result
+    else:
+        if model_metadata is not None:
+            features = engineer_features(df[df["merchant_id"] == merchant_id].tail(30))
+            features = features.dropna(subset=["prev_day_surplus", "same_weekday_last_week_surplus"])
+            if len(features) > 0:
+                model = model_metadata["model"]
+                feature_names = model_metadata["feature_names"]
+                categorical_cols = ["product_category", "merchant_type", "storage_type"]
+                all_categories = {
+                    "product_category": ["Bento Sets", "Bread", "Cakes", "Coffee & Beverages", "Cookies",
+                                        "Desserts", "Noodle Dishes", "Pastries", "Rice Dishes",
+                                        "Salads", "Sandwiches", "Soup & Sides", "Tarts"],
+                    "merchant_type": ["Bakery", "Café", "Small F&B"],
+                    "storage_type": ["Ambient", "Frozen", "Refrigerated"]
+                }
+                for col in categorical_cols:
+                    if col in features.columns:
+                        dummies = pd.get_dummies(features[col], prefix=col)
+                        for cat in all_categories.get(col, []):
+                            dummy_col = f"{col}_{cat}"
+                            if dummy_col not in dummies.columns:
+                                dummies[dummy_col] = 0
+                        features = pd.concat([features, dummies], axis=1)
+                X = pd.DataFrame(columns=feature_names)
+                for col in feature_names:
+                    if col in features.columns:
+                        X[col] = features[col]
+                    else:
+                        X[col] = 0
+                X = X.fillna(0)
+                if len(X) > 0:
+                    predictions = model.predict(X)
+                    avg_prediction = predictions.mean()
+                else:
+                    avg_prediction = record["surplus_quantity"] * 1.1
+            else:
+                avg_prediction = record["surplus_quantity"] * 1.1
+        else:
+            avg_prediction = record["surplus_quantity"] * 1.1
+        cold_start_note = None
+
+    avg_prediction = round(avg_prediction, 1)
+
     # Get selected record (use iloc[-1] as fallback for safety)
     filtered_df = df[
         (df["merchant_id"] == merchant_id) &
@@ -920,6 +977,94 @@ def main():
             (df["product_category"] == selected_category)
         ].tail(1)
         record = fallback_df.iloc[-1]
+
+    # Compute safety and recommendation early so Executive Decision Summary can appear near the top
+    safety_result = check_item_safety(
+        product_category=selected_category,
+        preparation_time=record["preparation_time"],
+        holding_time_hours=record["holding_time_hours"],
+        storage_type=record["storage_type"],
+        shelf_life_hours=record["shelf_life_hours"],
+    )
+
+    recommendation = generate_recommendation(
+        merchant_id=merchant_id,
+        merchant_type=merchant_type,
+        product_category=selected_category,
+        product_name=selected_product,
+        original_price=record["original_price"],
+        predicted_surplus=avg_prediction,
+        shelf_life_hours=record["shelf_life_hours"],
+        preparation_time=record["preparation_time"],
+        storage_type=record["storage_type"],
+        holding_time_hours=record["holding_time_hours"],
+        current_time=current_time_str,
+        safety_status=safety_result.status,
+        safety_flags=safety_result.flags,
+    )
+
+    # ===== EXECUTIVE DECISION SUMMARY — appears near top for immediate visibility =====
+    discount_pct = recommendation['recommended_discount_pct']
+    if discount_pct >= 0.6:
+        action_label = "DEEP DISCOUNT"
+        action_color = "#EF4444"
+    elif discount_pct >= 0.4:
+        action_label = "DISCOUNT"
+        action_color = "#F59E0B"
+    elif discount_pct >= 0.2:
+        action_label = "MONITOR"
+        action_color = "#3B82F6"
+    else:
+        action_label = "HOLD"
+        action_color = "#10B981"
+
+    surplus_qty = recommendation['predicted_surplus']
+    shelf_life = record['shelf_life_hours']
+    holding = record['holding_time_hours']
+    remaining = shelf_life - holding
+    recovery = recommendation['estimated_merchant_recovery']
+    original = recommendation['original_value']
+
+    if safety_result.status == "SAFE":
+        safety_label = "SAFE"
+        safety_color = "#10B981"
+        safety_icon = "✓"
+    elif safety_result.status == "CAUTION":
+        safety_label = "CAUTION"
+        safety_color = "#F59E0B"
+        safety_icon = "⚠"
+    else:
+        safety_label = "BLOCKED"
+        safety_color = "#EF4444"
+        safety_icon = "✕"
+
+    st.markdown("""
+    <div style="background: var(--surface-elevated); border: 1px solid var(--accent); border-radius: 16px; padding: 28px 32px; margin: 16px 0 24px 0;">
+        <div style="font-size: 13px; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px;">Executive Decision Summary</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px;">
+            <div style="text-align: center;">
+                <div style="font-size: 11px; font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">Recommended Action</div>
+                <div style="font-size: 18px; font-weight: 700; color: """ + action_color + """; background: """ + action_color + """22; border: 1px solid """ + action_color + """; border-radius: 8px; padding: 8px 16px; display: inline-block;">""" + action_label + """</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 11px; font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">Why</div>
+                <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.5;">""" + f"{surplus_qty:.0f} units predicted · {discount_pct*100:.0f}% discount recommended" + """</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 11px; font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">Safety Status</div>
+                <div style="font-size: 14px; font-weight: 700; color: """ + safety_color + """; background: """ + safety_color + """22; border: 1px solid """ + safety_color + """; border-radius: 8px; padding: 8px 16px; display: inline-block;">""" + safety_icon + """ """ + safety_label + """</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 11px; font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">Estimated Recovery</div>
+                <div style="font-size: 14px; font-weight: 700; color: var(--accent);">SGD """ + f"{recovery:.2f}" + """</div>
+                <div style="font-size: 11px; color: var(--text-tertiary);">vs SGD """ + f"{original:.2f}" + """ potential loss</div>
+            </div>
+        </div>
+        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 13px; color: var(--text-secondary);">
+            <strong style="color: var(--text-primary);">Recommended next step:</strong> Apply the suggested discount only after reviewing safety warnings and confirming in-store handling compliance.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
     # Impact Today Strip — sustainability KPIs (calculated from all merchants on selected date)
     impact = calculate_impact_metrics(df, date_filter=selected_date)
@@ -971,75 +1116,18 @@ def main():
         is_weekend = selected_dt.weekday() >= 5
 
         if cold_start_mode:
-            # Cold-start: use cluster centroid-based prediction
-            cold_result = predict_surplus_cold_start(
-                merchant_type=merchant_type,
-                product_category=selected_category,
-                avg_daily_production=None,
-                dominant_storage=record.get("storage_type", "Refrigerated"),
-                is_weekend=is_weekend,
-            )
-            avg_prediction = cold_result["predicted_surplus"]
+            # Cold-start: display variables (prediction already computed above)
             prediction_display = f"{avg_prediction:.0f} units"
             prediction_subtitle = f"Based on {merchant_type.lower()} cluster patterns"
             starter_pill = '<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 8px;background:#F59E0B22;border-radius:9999px;font-size:11px;font-weight:600;color:#F59E0B;">Starter estimate</span>'
             prediction_badge = f"&nbsp;{starter_pill}"
-            prediction_ratio = cold_result["surplus_ratio_used"]
-            cold_start_note = cold_result  # pass full dict for use in recommendation
+            prediction_ratio = cold_start_note["surplus_ratio_used"] if cold_start_note else None
         else:
-            # Standard: XGBoost model prediction
-            if model_metadata is not None:
-                features = engineer_features(df[df["merchant_id"] == merchant_id].tail(30))
-                features = features.dropna(subset=["prev_day_surplus", "same_weekday_last_week_surplus"])
-
-                if len(features) > 0:
-                    model = model_metadata["model"]
-                    feature_names = model_metadata["feature_names"]
-
-                    categorical_cols = ["product_category", "merchant_type", "storage_type"]
-                    all_categories = {
-                        "product_category": ["Bento Sets", "Bread", "Cakes", "Coffee & Beverages", "Cookies",
-                                            "Desserts", "Noodle Dishes", "Pastries", "Rice Dishes",
-                                            "Salads", "Sandwiches", "Soup & Sides", "Tarts"],
-                        "merchant_type": ["Bakery", "Café", "Small F&B"],
-                        "storage_type": ["Ambient", "Frozen", "Refrigerated"]
-                    }
-
-                    for col in categorical_cols:
-                        if col in features.columns:
-                            dummies = pd.get_dummies(features[col], prefix=col)
-                            for cat in all_categories.get(col, []):
-                                dummy_col = f"{col}_{cat}"
-                                if dummy_col not in dummies.columns:
-                                    dummies[dummy_col] = 0
-                            features = pd.concat([features, dummies], axis=1)
-
-                    X = pd.DataFrame(columns=feature_names)
-                    for col in feature_names:
-                        if col in features.columns:
-                            X[col] = features[col]
-                        else:
-                            X[col] = 0
-                    X = X.fillna(0)
-
-                    if len(X) > 0:
-                        predictions = model.predict(X)
-                        avg_prediction = predictions.mean()
-                    else:
-                        avg_prediction = record["surplus_quantity"] * 1.1
-                else:
-                    avg_prediction = record["surplus_quantity"] * 1.1
-            else:
-                avg_prediction = record["surplus_quantity"] * 1.1
-
+            # Standard: display variables (prediction already computed above)
             prediction_display = f"{avg_prediction:.0f} units"
             prediction_subtitle = f"Based on {merchant_type} patterns"
             prediction_badge = ""
             prediction_ratio = None
-            cold_start_note = None
-
-        # Normalize to 1 decimal place before display and before passing to recommendation
-        avg_prediction = round(avg_prediction, 1)
 
         # Calculate historical average
         historical_avg = df[(df["merchant_id"] == merchant_id) & (df["product_category"] == selected_category)]["surplus_quantity"].mean()
@@ -1131,47 +1219,50 @@ def main():
     st.markdown("---")
     st.subheader("Model Performance")
 
-    # Use 5-seed mean values (canonical from multi_seed_validation.csv)
-    # vs best baseline (lowest MAE) from model_results.csv
+    # Use temporal holdout values from the final model (consistent with executive report)
+    # Historical Average MAE: 1.49 (from model_results.csv)
+    # XGBoost MAE: 0.64 / RMSE: 0.81 (from temporal holdout, model_metadata.json)
+    # Earlier 5-seed mean evaluation is retained in multi_seed_validation.csv for robustness checks
     if results_df is not None:
         baselines = results_df[results_df["is_baseline"] == True]
         if len(baselines) > 0:
             best_baseline_row = baselines.loc[baselines["MAE"].idxmin()]
-            baseline_mae = best_baseline_row["MAE"]   # Previous Day: 1.98
-            baseline_rmse = best_baseline_row["RMSE"]  # Previous Day: 2.61
+            baseline_mae = best_baseline_row["MAE"]   # Historical Average: 1.49
+            baseline_rmse = best_baseline_row["RMSE"]  # Historical Average RMSE
 
-        # 5-seed mean values (canonical from multi_seed_validation.csv)
-        xgb_mae_5seed = 0.6824  # mean across 5 seeds
-        xgb_rmse_5seed = 0.9144  # mean across 5 seeds
-        improvement_pct = (baseline_mae - xgb_mae_5seed) / baseline_mae * 100  # 65.5% vs Previous Day
+        # Temporal holdout values (authoritative — used in executive report and README)
+        xgb_mae = 0.6355  # XGBoost temporal holdout MAE
+        xgb_rmse = 0.8131  # XGBoost temporal holdout RMSE
+        improvement_pct = (baseline_mae - xgb_mae) / baseline_mae * 100  # 57.2% vs Historical Average
 
         # Metric cards in a row
         perf_col1, perf_col2, perf_col3, perf_col4 = st.columns(4)
         with perf_col1:
             st.metric("Best Baseline MAE", f"{baseline_mae:.2f}", best_baseline_row["model"])
         with perf_col2:
-            st.metric(f"{model_type} MAE (5-seed mean)", f"{xgb_mae_5seed:.2f}")
+            st.metric("XGBoost MAE", f"{xgb_mae:.2f}", "Temporal holdout")
         with perf_col3:
-            st.metric("Improvement", f"{improvement_pct:.1f}%", "vs Baseline")
+            st.metric("Improvement vs Baseline", f"{improvement_pct:.1f}%", "Temporal holdout")
         with perf_col4:
-            st.metric(f"{model_type} RMSE (5-seed mean)", f"{xgb_rmse_5seed:.2f}")
+            st.metric("XGBoost RMSE", f"{xgb_rmse:.2f}", "Temporal holdout")
 
-        # Baseline comparison chart — XGBoost uses 5-seed mean; baselines from same evaluation run
+        st.caption(
+            "Primary metric uses temporal holdout evaluation (last 20% of dates, sorted by date). "
+            "Earlier 5-seed mean evaluation (MAE 0.68) is retained in model logs for robustness checks."
+        )
+
+        # Baseline comparison chart — XGBoost uses temporal holdout value
         st.markdown(f'<div class="section-header">{ICONS["chart"]} Baseline vs Model Comparison</div>', unsafe_allow_html=True)
 
-        # Build chart DataFrame: baselines from model_results.csv + XGBoost 5-seed mean
-        # multi_seed_validation.csv is wide-format: seed col + per-model mae columns, mean row at bottom
         chart_data = results_df[results_df["is_baseline"] == True].copy()
-        if multi_seed_df is not None:
-            mean_row = multi_seed_df[multi_seed_df["seed"] == "mean"]
-            if len(mean_row) > 0:
-                xgb_row = pd.DataFrame([{
-                    "model": "XGBoost (5-seed mean)",
-                    "MAE": float(mean_row["xgb_holdout_mae"].iloc[0]),   # 0.6824
-                    "RMSE": float(xgb_rmse_5seed),                       # 0.91
-                    "is_baseline": False,
-                }])
-                chart_data = pd.concat([chart_data, xgb_row], ignore_index=True)
+        # Add XGBoost temporal holdout row
+        xgb_row = pd.DataFrame([{
+            "model": "XGBoost (Temporal Holdout)",
+            "MAE": float(xgb_mae),
+            "RMSE": float(xgb_rmse),
+            "is_baseline": False,
+        }])
+        chart_data = pd.concat([chart_data, xgb_row], ignore_index=True)
 
         fig = px.bar(
             chart_data,
@@ -1212,6 +1303,10 @@ def main():
         )
         fig.update_traces(marker_line_width=0)
         st.plotly_chart(fig, width='stretch')
+        st.caption(
+            "Model metrics are shown for transparency. Merchant action should be based on the recommendation, "
+            "safety status, and business context — not MAE alone."
+        )
     else:
         st.info("Run evaluation to see model performance metrics")
 
@@ -1230,33 +1325,7 @@ def main():
     st.markdown("---")
     st.subheader("Discount Recommendation")
 
-    # Food safety check
-    safety_result = check_item_safety(
-        product_category=selected_category,
-        preparation_time=record["preparation_time"],
-        holding_time_hours=record["holding_time_hours"],
-        storage_type=record["storage_type"],
-        shelf_life_hours=record["shelf_life_hours"],
-    )
-
-    # Generate recommendation
-    recommendation = generate_recommendation(
-        merchant_id=merchant_id,
-        merchant_type=merchant_type,
-        product_category=selected_category,
-        product_name=selected_product,
-        original_price=record["original_price"],
-        predicted_surplus=avg_prediction,
-        shelf_life_hours=record["shelf_life_hours"],
-        preparation_time=record["preparation_time"],
-        storage_type=record["storage_type"],
-        holding_time_hours=record["holding_time_hours"],
-        current_time=current_time_str,
-        safety_status=safety_result.status,
-        safety_flags=safety_result.flags,
-    )
-
-    # ===== RECOMMENDATION SECTION =====
+    # (Safety and recommendation already computed above for Executive Decision Summary)
     st.markdown("---")
 
     # Hero card — main recommendation
