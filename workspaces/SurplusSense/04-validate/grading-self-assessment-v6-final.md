@@ -25,7 +25,7 @@ It helps bakeries, cafés, and prepared-food outlets make late-day surplus decis
 
 The product combines:
 
-- supervised ML surplus prediction (XGBoost, 46 features)
+- supervised ML surplus prediction (XGBoost, 31 raw features → 47 model input columns)
 - deterministic recommendation rules
 - food-safety gating (BLOCK / CAUTION / SAFE)
 - recovery-value estimation
@@ -53,7 +53,7 @@ Consumer marketplace integration remains a Phase 2 opportunity, not part of the 
 ## Final Test Result
 
 - Product validation command: `pytest tests/unit -q`
-- Result: **63 passed** (all SurplusSense product unit tests)
+- Result: **75 passed** (all SurplusSense product unit tests)
 - Note: Root-level `pytest -q` includes `tests/sdk/test_sdk_patterns.py` (Kailash SDK template test) which has a fixture error — this is not a SurplusSense product test. Product validation is `pytest tests/unit -q`.
 
 ---

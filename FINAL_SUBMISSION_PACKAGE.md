@@ -21,13 +21,13 @@ The product combines XGBoost surplus prediction with deterministic recommendatio
 | Executive report (max 4 pages) | `docs/EXECUTIVE_REPORT.md`                                                | 197 lines — problem, product, worked example, model results, business case                  |
 | COC decision log               | `COC_DECISION_LOG.md`                                                     | 12 sections — prototype-to-product journey, rejected alternatives, human-judgment audit     |
 | Problem worth solving          | `docs/EXECUTIVE_REPORT.md` §1                                             | Merchant-side surplus decision at end of day                                                |
-| ML/AI depth                    | `src/train_model.py` + `src/feature_engineering.py`                       | XGBoost, 46 features, temporal 80/20 holdout, leakage-aware expanding-window aggregates     |
+| ML/AI depth                    | `src/train_model.py` + `src/feature_engineering.py`                       | XGBoost, 31 raw features → 47 model input columns, temporal 80/20 holdout, leakage-aware expanding-window aggregates |
 | Temporal validation            | `src/feature_engineering.py`                                              | `shift(1)` on all aggregate features; no target lookahead                                   |
 | Business case                  | `PILOT_VALIDATION_PLAN.md`                                                | Recovery value, willingness-to-pay, pilot design                                            |
 | Not a default COC demo         | `COC_DECISION_LOG.md` §11                                                 | Human-judgment decision audit — documented rejected alternatives                            |
 | Different ML technique family  | README.md + COC_DECISION_LOG.md                                           | SurplusSense: supervised XGBoost regression. WanderLess: recommender systems + optimization |
 | User flows                     | `workspaces/SurplusSense/03-user-flows/01-merchant-flows.md`              | Final merchant decision flow; Phase 2 flows documented separately                           |
-| Validation                     | `workspaces/SurplusSense/04-validate/grading-self-assessment-v6-final.md` | 93–94/100 self-assessment; 63 unit tests; all requirements met                              |
+| Validation                     | `outputs/model_comparison.csv` + `tests/unit/`                             | XGBoost temporal holdout MAE 0.6355; 75 unit tests; all requirements met                   |
 | Process trail                  | `workspaces/SurplusSense/journal/`                                        | 29 journal entries; scope evolution documented                                              |
 
 ---
@@ -38,7 +38,7 @@ The product combines XGBoost surplus prediction with deterministic recommendatio
 python -m pytest tests/unit/ -q
 ```
 
-**Result: 63 passed**
+**Result: 75 passed**
 
 ---
 
@@ -67,9 +67,9 @@ Dashboard opens at `http://localhost:8501`.
 | Model               | Temporal Holdout MAE | Notes                                    |
 | ------------------- | -------------------- | ---------------------------------------- |
 | Historical Average  | 1.49                 | Baseline                                 |
-| **XGBoost (Tuned)** | **0.64**             | Primary metric; 57% better than baseline |
+| **XGBoost (Tuned)** | **0.6355**             | Primary metric; 57% better than baseline |
 
-Primary metric sourced from `outputs/model_results.csv`. Temporal holdout (last 20% of dates) is the primary evaluation — not random split.
+Primary metric sourced from `outputs/model_comparison.csv`. Temporal holdout (last 20% of dates) is the primary evaluation — not random split.
 
 ---
 
@@ -85,7 +85,7 @@ SurplusSense uses **supervised machine learning** (XGBoost surplus prediction). 
 2. **Read the executive report** — `docs/EXECUTIVE_REPORT.md` (4 pages)
 3. **Review the decision log** — `COC_DECISION_LOG.md`
 4. **Check the self-assessment** — `workspaces/SurplusSense/04-validate/grading-self-assessment-v6-final.md`
-5. **Run the tests** — `pytest tests/unit/ -q` (63 passed)
+5. **Run the tests** — `pytest tests/unit/ -q` (75 passed)
 
 ---
 
@@ -240,6 +240,10 @@ This produces `SurplusSense_FINAL.zip` containing only the assessment-relevant f
 
 ## GitHub Link Submission
 
+**Private repository:** https://github.com/TohzKai/surplusSense
+
+Prof. Jack Hong has been invited as a collaborator for grading. The repository will remain private and access will be removed after grading, as instructed.
+
 This repository is submitted via GitHub link, not as a ZIP file. Therefore, the repository itself is the submission package and must be curated.
 
 ### Kept in repository
@@ -248,6 +252,9 @@ The following constitute the final GitHub submission:
 
 ```
 README.md
+docs/INDIVIDUAL_REPORT.md
+docs/DEVELOPER_HANDOVER.md
+docs/USER_GUIDE.md
 docs/EXECUTIVE_REPORT.md
 COC_DECISION_LOG.md
 PILOT_VALIDATION_PLAN.md

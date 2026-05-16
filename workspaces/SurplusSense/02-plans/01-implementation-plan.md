@@ -6,11 +6,11 @@ The final submitted MVP is the **merchant decision-support cockpit**: a Streamli
 
 **What the MVP includes:**
 
-- XGBoost surplus prediction (46 features, temporal 80/20 holdout validation)
+- XGBoost surplus prediction (31 raw features → 47 model input columns, temporal 80/20 holdout validation)
 - 10-tier discount recommendation engine with cold-start category benchmarks
 - 5-check food-safety gate (BLOCK / CAUTION / SAFE)
 - Recovery-value estimation
-- 63 passing unit tests
+- 75 passing unit tests
 - Reproducible pipeline (`RANDOM_SEED=42`)
 
 **What is NOT in the MVP (Phase 2):**

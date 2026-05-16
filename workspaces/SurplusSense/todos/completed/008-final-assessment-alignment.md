@@ -45,5 +45,5 @@ This todo is complete because the repository now contains:
 - final scope-alignment journal (`workspaces/SurplusSense/journal/0030-DECISION-final-scope-and-assessment-alignment.md`)
 - COC final decision audit (COC_DECISION_LOG.md)
 - README assessment evidence map (README.md)
-- passing pytest result (63 passed)
+- passing pytest result (75 passed)
 - final commit readiness

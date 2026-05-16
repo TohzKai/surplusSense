@@ -93,7 +93,7 @@ Use the Revenue Recovery Simulator to adjust discount level and surplus quantity
 
 ## How the ML Works (30 seconds)
 
-> "The prediction model is XGBoost — 46 engineered features including:
+> "The prediction model is XGBoost — 31 raw features (expanded to 47 model input columns after one-hot encoding), including:
 >
 > - Temporal patterns (day of week, weekend, month)
 > - Lag features (previous day surplus, same weekday last week)

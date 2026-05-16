@@ -62,7 +62,7 @@ Initial business model:
 - Dashboard: Streamlit (interactive UI)
 - Data: Pandas, NumPy
 - Evaluation: Temporal 80/20 holdout + 5-fold TimeSeriesSplit CV
-- Testing: pytest (63 unit tests)
+- Testing: pytest (75 unit tests)
 - Random seed: 42
 
 ## Assessment Alignment

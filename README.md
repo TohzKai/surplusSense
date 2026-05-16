@@ -9,11 +9,35 @@ A decision-support product that helps food merchants decide what to discount, do
 | File                             | Purpose                                                                         |
 | -------------------------------- | ------------------------------------------------------------------------------- |
 | `app/streamlit_app.py`           | **Working interactive product** — run with `streamlit run app/streamlit_app.py` |
-| `docs/EXECUTIVE_REPORT.md`       | 4-page executive summary — problem, product, results, business case             |
+| `docs/INDIVIDUAL_REPORT.md`     | Individual assignment report — 4–8 pages, three-audience structure              |
 | `COC_DECISION_LOG.md`            | Prototype-to-product decision journey and judgment evidence                     |
-| `DIGITAL_TRANSFORMATION_DECK.md` | 8-slide executive presentation                                                  |
-| `PILOT_VALIDATION_PLAN.md`       | Proposed 4-week merchant pilot design                                           |
-| `src/`                           | Reproducible ML pipeline with 63 passing unit tests                             |
+| `src/`                           | Reproducible ML pipeline with 75 passing unit tests                             |
+
+**Private repository:** https://github.com/TohzKai/surplusSense
+
+Prof. Jack Hong has been invited as a collaborator for grading. The repository will remain private and access will be removed after grading, as instructed.
+
+### How to Run
+
+```bash
+pip install -r requirements.txt
+streamlit run app/streamlit_app.py
+```
+
+### ML Technique Family
+
+SurplusSense uses **supervised regression with XGBoost** — predicting surplus units as a continuous value. This differs from the team project, WanderLess, which uses **recommender systems and optimization** (hybrid tourist-guide matching, TruncatedSVD collaborative filtering, and itinerary optimization).
+
+### Test Command
+
+```bash
+python -m pytest tests/unit/ -q
+# Result: 75 passed
+```
+
+### Official Model Metric
+
+XGBoost temporal holdout MAE: **0.6355** (from `outputs/model_comparison.csv`). This is the primary metric — computed on the last 20% of dates, sorted chronologically. The model improves over the Historical Average baseline by **57%**.
 
 ---
 
@@ -40,7 +64,7 @@ SurplusSense is not an ML dashboard. It is a **decision-support product** that t
 
 The product delivers five decision-support capabilities:
 
-1. **Surplus prediction** — estimates expected waste units (XGBoost model, 46 engineered features)
+1. **Surplus prediction** — estimates expected waste units (XGBoost model, 31 raw features → 47 model input columns after one-hot encoding)
 2. **Action recommendation** — suggests HOLD / MONITOR / DISCOUNT / DEEP DISCOUNT / DONATE / DISCARD based on quantity and time pressure
 3. **Discount tier guidance** — maps surplus and shelf life to a specific discount intensity (20–70%)
 4. **Food safety screening** — checks shelf life, holding time, storage type, and pickup window; returns SAFE / CAUTION / BLOCK
@@ -115,11 +139,11 @@ All pipelines use `RANDOM_SEED=42` for deterministic results.
 ```bash
 python data/generate_synthetic_data.py   # Regenerate training data
 python src/train_model.py                # Retrain model, save to outputs/surplus_model.pkl
-python src/evaluate_model.py             # Evaluate on holdout set
-pytest tests/unit/ -q                   # Run unit tests (63 passing)
+python src/evaluate_model.py             # Display official temporal holdout metrics from outputs/model_comparison.csv
+pytest tests/unit/ -q                   # Run unit tests (75 passing)
 ```
 
-**Test results:** 63 unit tests across 5 modules — all passing.
+**Test results:** 75 unit tests across 5 modules — all passing.
 **Model outputs:** `outputs/model_results.csv`, `outputs/metrics_summary.csv`
 **Trained model:** `outputs/surplus_model.pkl`
 
@@ -145,13 +169,13 @@ This submission includes all required deliverables:
 | ------------------------- | -------------------------------- | ---------------------------------------------------------------- |
 | **Working product**       | `app/streamlit_app.py`           | Interactive decision-support dashboard                           |
 | **ML pipeline**           | `src/train_model.py`             | XGBoost training, temporal 80/20 holdout                         |
-| **Feature engineering**   | `src/feature_engineering.py`     | 46 features: temporal, lag, rolling, expanding-window aggregates |
+| **Feature engineering**   | `src/feature_engineering.py`     | 31 raw features → 47 model input columns; temporal, lag, rolling, expanding-window aggregates |
 | **Recommendation engine** | `src/recommendation_engine.py`   | 10-tier discount logic, recovery calculation                     |
 | **Safety rules**          | `src/food_safety_rules.py`       | 5 safety checks: BLOCK/CAUTION/SAFE                              |
 | **Cold-start**            | `src/recommendation_engine.py`   | Category benchmark fallback for new merchants                    |
-| **Model evaluation**      | `src/evaluate_model.py`          | Holdout evaluation, baseline comparison                          |
-| **Tests**                 | `tests/unit/`                    | 63 passing unit tests                                            |
-| **Model outputs**         | `outputs/model_results.csv`      | XGBoost MAE 0.64 (temporal holdout) vs baseline 1.49             |
+| **Model evaluation**      | `src/evaluate_model.py` + `outputs/model_comparison.csv` | Official temporal holdout evaluation; diagnostic broader-dataset evaluation available with --diagnostic |
+| **Tests**                 | `tests/unit/`                    | 75 passing unit tests                                            |
+| **Model outputs**         | `outputs/model_comparison.csv`  | XGBoost MAE 0.6355 (temporal holdout) vs baseline 1.49          |
 | **Executive report**      | `docs/EXECUTIVE_REPORT.md`       | 4-page business document                                         |
 | **Decision log**          | `COC_DECISION_LOG.md`            | Decision journey, judgment evidence                              |
 | **Deck**                  | `DIGITAL_TRANSFORMATION_DECK.md` | 8-slide executive presentation                                   |
@@ -163,9 +187,9 @@ This submission includes all required deliverables:
 | Model               | Temporal Holdout MAE | vs Historical Average |
 | ------------------- | -------------------- | --------------------: |
 | Historical Average  | 1.49                 |                     — |
-| **XGBoost (Tuned)** | **0.64**             |              **−57%** |
+| **XGBoost (Tuned)** | **0.6355**           |              **−57%** |
 
-Temporal holdout MAE (0.64) is the primary metric — it reflects forward-looking prediction on the last 20% of dates. 5-fold TimeSeriesSplit CV MAE: 1.38 ± 1.22 (higher variance reflects distributional shift across temporal folds). Results from `outputs/model_results.csv` and `models/model_metadata.json`.
+Temporal holdout MAE (0.6355) is the primary metric — it reflects forward-looking prediction on the last 20% of dates, sorted chronologically. 5-fold TimeSeriesSplit CV MAE: 1.38 ± 1.22 (higher variance reflects distributional shift across temporal folds). Results from `outputs/model_comparison.csv`.
 
 ---
 
@@ -179,7 +203,7 @@ Supervised regression: predict surplus units per item per day.
 
 XGBoost regressor, tuned via 5-fold TimeSeriesSplit CV. Compared against Historical Average and Previous Day baselines.
 
-### Feature Categories (46 features)
+### Feature Categories (31 raw fields → 47 model input columns after one-hot encoding)
 
 | Category                   | Examples                                                              |
 | -------------------------- | --------------------------------------------------------------------- |
@@ -280,10 +304,10 @@ app/
   streamlit_app.py          # Decision-support dashboard
 src/
   train_model.py            # XGBoost training + temporal 80/20 holdout
-  feature_engineering.py    # 46-feature engineering pipeline with expanding-window aggregates
+  feature_engineering.py    # 31 raw features → 47 model input columns; expanding-window aggregates
   recommendation_engine.py  # 10-tier discount engine + cold-start
   food_safety_rules.py     # 5 safety check functions
-  evaluate_model.py         # Model evaluation + baseline comparison
+  evaluate_model.py         # Display official temporal holdout metrics (use --diagnostic for broader-dataset evaluation)
 data/
   generate_synthetic_data.py # Synthetic F&B data generator
   synthetic_fnb_data.csv    # Training data (4,027 rows, 15 merchants)
@@ -307,7 +331,7 @@ tests/unit/
 - **Dashboard:** Streamlit (interactive UI)
 - **Data:** Pandas, NumPy
 - **Evaluation:** Temporal 80/20 holdout + 5-fold TimeSeriesSplit CV
-- **Testing:** pytest (63 unit tests)
+- **Testing:** pytest (75 unit tests)
 - **Random seed:** 42 (all pipelines)
 
 ---
@@ -353,4 +377,4 @@ The supervised regression approach (XGBoost predicting surplus units as a contin
 python -m pytest -q
 ```
 
-Result: **63 passed** — all SurplusSense product unit tests. `pytest.ini` at repository root restricts discovery to `tests/unit/` (excluding `tests/sdk/` which contains Kailash SDK template tests).
+Result: **75 passed** — all SurplusSense product unit tests. `pytest.ini` at repository root restricts discovery to `tests/unit/`.

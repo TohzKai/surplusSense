@@ -1045,7 +1045,14 @@ def main():
         cold_start_note = cold_result
     else:
         if model_metadata is not None:
-            features = engineer_features(df[df["merchant_id"] == merchant_id].tail(30))
+            # Scope feature engineering to merchant + category for relevant lag/rolling features.
+            # If insufficient history (< 10 records), fall back to merchant-only scope.
+            df_mc = df[(df["merchant_id"] == merchant_id) & (df["product_category"] == selected_category)]
+            if len(df_mc) >= 10:
+                features = engineer_features(df_mc.tail(30))
+            else:
+                # Insufficient merchant+category history — fall back to merchant scope
+                features = engineer_features(df[df["merchant_id"] == merchant_id].tail(30))
             features = features.dropna(subset=["prev_day_surplus", "same_weekday_last_week_surplus"])
             if len(features) > 0:
                 model = model_metadata["model"]
@@ -1077,7 +1084,7 @@ def main():
                     predictions = model.predict(X)
                     avg_prediction = predictions.mean()
                 else:
-                    # Safe fallback — no model data; use global category mean surplus
+                    # Safe fallback — no model data; use category mean surplus
                     cat_mean = df[df["product_category"] == selected_category]["surplus_quantity"].mean() if len(df[df["product_category"] == selected_category]) > 0 else 5.0
                     avg_prediction = float(cat_mean) * 1.1
             else:
@@ -1223,6 +1230,7 @@ def main():
     with col1:
         st.markdown(f'<div class="section-header">{ICONS["target"]} Surplus Prediction</div>', unsafe_allow_html=True)
         st.caption("Updates with the selected merchant, product, date, and time.")
+        st.info("**Prediction scoping:** SurplusSense recalculates features using the selected merchant and product/category context. Where there is insufficient history (fewer than 10 records for this merchant + category), it falls back to a broader merchant-level scope.")
 
         # Determine if weekend based on selected date
         selected_dt = datetime.strptime(selected_date, "%Y-%m-%d")

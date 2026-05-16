@@ -37,7 +37,7 @@ SurplusSense is a **decision-support product** — it translates surplus-risk pr
 | Step                           | What happens                                                                                                     |
 | ------------------------------ | ---------------------------------------------------------------------------------------------------------------- |
 | **1 — Enter context**          | Merchant selects product category, storage type, holding time, shelf life                                        |
-| **2 — Predict surplus**        | XGBoost model estimates expected surplus units from 46 leakage-aware features                                    |
+| **2 — Predict surplus**        | XGBoost model estimates expected surplus units from 31 raw features (expanded to 47 model input columns after one-hot encoding) |
 | **3 — Recommend action**       | Rule engine maps surplus quantity and shelf life to HOLD / MONITOR / DISCOUNT / DEEP DISCOUNT / DONATE / DISCARD |
 | **4 — Screen for safety**      | Five deterministic checks return SAFE / CAUTION / BLOCKED                                                        |
 | **5 — Estimate recovery**      | System calculates discounted revenue recovery vs potential loss                                                  |
@@ -64,7 +64,7 @@ The architecture deliberately separates prediction from prescription: **the mode
 | Layer               | Component                                 | Role                                                        |
 | ------------------- | ----------------------------------------- | ----------------------------------------------------------- |
 | Input               | Merchant/item context                     | Merchant enters product and outlet details                  |
-| Feature engineering | 46 features                               | Lag, rolling, expanding-window, temporal, category features |
+| Feature engineering | 31 raw features → 47 model input columns  | Lag, rolling, expanding-window, temporal, category features |
 | Prediction          | XGBoost                                   | Estimates surplus units                                     |
 | Validation          | Temporal holdout + TimeSeriesSplit        | Forward-looking evaluation                                  |
 | Leakage control     | Expanding-window aggregates with shift(1) | Prevents future-information lookahead                       |
@@ -132,66 +132,4 @@ The commercial case does not require every surplus decision to generate large sa
 | Staff use dashboard daily            | Low-friction manual entry; no POS required in Phase 1 | Pilot observes daily active usage              | ≥ 4 sessions/week per outlet    |
 
 ---
-
-## 6. Pilot Validation Plan
-
-The next step is a 4-week engagement with 3–5 volunteer bakeries or cafés in Singapore:
-
-- 1–2 daily surplus decision cycles per outlet
-- Staff enter item context manually via the dashboard
-- Recommendations issued; staff record accept / override / ignore with brief reason
-
-**Success metrics:**
-
-| Metric                         | Target                                                 |
-| ------------------------------ | ------------------------------------------------------ |
-| Daily active usage             | At least 70% of operating days                         |
-| Recommendation acceptance rate | At least 50%                                           |
-| Average recovered value        | At least SGD 6–12 per day                              |
-| Avoided unsafe listing         | Zero unsafe items recommended for sale                 |
-| Staff decision time            | Reduced versus manual process                          |
-| Willingness to pay             | At least 2 of 5 outlets willing to pay SGD 99+ monthly |
-
-The pilot produces real-data inputs required before full deployment: POS sales history, inventory snapshots, actual disposal records, safety rule calibration, and willingness-to-pay signals. Because the current product uses synthetic data, the pilot is required before production performance claims.
-
----
-
-## 7. Why This Is Ready for Assessment
-
-SurplusSense satisfies the individual assignment requirement because it is a **working interactive product**, not a slide concept or notebook. The user can enter merchant and item context, receive a surplus prediction, see a recommended action, review food-safety status, and estimate revenue recovery.
-
-The product demonstrates maturity beyond the weekly prototype in four ways:
-
-1. **Additional decision layers**: prediction is combined with recommendation, food-safety gating, and recovery-value estimation
-2. **Improved model discipline**: temporal validation and leakage-aware aggregate features reduce risk of overstated model performance
-3. **Improved user experience**: dashboard is organised around merchant decisions rather than technical metrics
-4. **Commercial path**: pilot plan defines target buyers, pricing logic, success metrics, and next validation steps
-
-The product is **pilot-ready**: not yet production-validated, but sufficiently complete for a merchant, investor, or company sponsor to evaluate.
-
----
-
-## 8. Limitations and Next Validation
-
-| Limitation                            | Impact                                             | Mitigation                                                  |
-| ------------------------------------- | -------------------------------------------------- | ----------------------------------------------------------- |
-| **Synthetic training data**           | Model accuracy on real merchant data unknown       | Retrain on pilot merchant data before production            |
-| **Food safety rules advisory**        | Not SFA-validated; merchant assumes responsibility | Clear disclaimer in UI; BLOCK/CAUTION/SAFE is guidance only |
-| **Single-tenant MVP**                 | No multi-merchant support                          | Phase 2 multi-tenant infrastructure                         |
-| **Cold-start uses category averages** | Less accurate for unusual merchants                | Improves as merchant-specific data accumulates              |
-| **No POS/inventory integration**      | Manual entry required                              | Phase 2 POS/inventory integration                           |
-| **No live pilot conducted**           | No real merchant validation                        | Structured 4-week pilot plan defined                        |
-
----
-
-## 9. References
-
-- National Environment Agency, Food Waste Management, Singapore, 2024
-- SurplusSense Synthetic Data Generator: `data/generate_synthetic_data.py`
-- Model and Evaluation Pipeline: `src/train_model.py`, `src/feature_engineering.py`
-- SMU MGMT655 Machine Learning for Decision Making — Individual Assignment Requirements
-- Yindii, Treatsure, Too Good To Go (Singapore surplus-food platform examples)
-
----
-
-_SurplusSense is a pilot-ready decision-support prototype. It is not production-deployed, not SFA-validated, and not commercially live. All performance metrics are from synthetic data and require pilot validation before commercial claims._
+_SurplusSense is a pilot-ready decision-support prototype. It is not SFA-validated, and not commercially live. All performance metrics are from synthetic data and require validation before commercial claims._

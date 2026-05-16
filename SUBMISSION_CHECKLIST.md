@@ -10,7 +10,7 @@ Complete this checklist before submitting. All items must be verified.
 - [ ] Interactive decision workflow works end-to-end
 - [ ] Prediction, recommendation, safety gate, and recovery estimate all display correctly
 - [ ] Revenue Recovery Simulator is functional
-- [ ] 63 unit tests pass: `pytest tests/unit/ -q`
+- [ ] 75 unit tests pass: `pytest tests/unit/ -q`
 - [ ] Python compile check passes: `python -m py_compile app/streamlit_app.py src/*.py`
 
 ## Required Deliverables
@@ -43,7 +43,7 @@ Complete this checklist before submitting. All items must be verified.
 
 ## GitHub Submission
 
-- [ ] `python -m pytest -q` returns `63 passed`
+- [ ] `python -m pytest -q` returns `75 passed`
 - [ ] `python -m py_compile app/streamlit_app.py src/*.py` passes
 - [ ] `git status` is clean (all noisy files removed or ignored)
 - [ ] README review path is clear
@@ -85,7 +85,7 @@ Complete this checklist before submitting. All items must be verified.
 
 ## Final Verification
 
-- [ ] Run: `python -m pytest tests/unit -q` — all 63 tests pass
+- [ ] Run: `python -m pytest tests/unit -q` — all 75 tests pass
 - [ ] Run: `python -m py_compile app/streamlit_app.py` — no errors
 - [ ] Run: `python -m py_compile src/feature_engineering.py src/recommendation_engine.py src/food_safety_rules.py` — no errors
 - [ ] README.md is accurate and consistent with deliverables

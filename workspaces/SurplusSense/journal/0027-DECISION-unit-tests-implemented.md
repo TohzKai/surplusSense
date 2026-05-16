@@ -4,7 +4,7 @@
 **Date**: 2026-04-26
 **Supersedes**: journal/0016-GAP-missing-unit-tests-src-modules.md (gap identified, now resolved)
 
-> **Supersession note:** Unit test count has since been reconciled to 63 passing unit tests. This journal entry records the decision to implement unit tests; the current test count is confirmed in `grading-self-assessment-v6-final.md` and by running `pytest tests/unit/ -q`.
+> **Correction for final submission (2026-05-17):** The current validated test suite reports **75 passing unit tests**. This journal entry records the decision to implement unit tests; the test count has been updated to reflect the current suite size.
 
 ## Context
 
@@ -12,17 +12,18 @@ Journal 0016 (dated 2026-04-25) identified that no dedicated unit tests existed 
 
 ## Resolution
 
-Unit tests have since been written. The `tests/unit/` directory now contains **5 test files** totaling **933 lines**:
+Unit tests have since been written. The `tests/unit/` directory now contains **6 test files**:
 
-| File                            | Lines | Coverage                                                                                                                   |
-| ------------------------------- | ----- | -------------------------------------------------------------------------------------------------------------------------- |
-| `test_data_generator.py`        | 139   | Synthetic data generation, field validation, surplus calculation                                                           |
-| `test_feature_engineering.py`   | 184   | Time features, lag features, rolling features, merchant aggregates, full pipeline                                          |
-| `test_food_safety_rules.py`     | 223   | Holding time thresholds, shelf life validation, pickup windows, storage types, preparation time, item-level safety         |
-| `test_model_training.py`        | 162   | Baseline predictions, metrics calculation, feature importance                                                              |
-| `test_recommendation_engine.py` | 225   | Discount tier logic, recovery value calculation, listing time determination, full recommendation generation, emoji mapping |
+| File                            | Coverage                                                                                                                   |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `test_data_generator.py`        | Synthetic data generation, field validation, surplus calculation                                                           |
+| `test_feature_engineering.py`   | Time features, lag features, rolling features, merchant aggregates, full pipeline                                          |
+| `test_food_safety_rules.py`     | Holding time thresholds, shelf life validation, pickup windows, storage types, preparation time, item-level safety         |
+| `test_model_training.py`        | Baseline predictions, metrics calculation, feature importance                                                              |
+| `test_recommendation_engine.py` | Discount tier logic, recovery value calculation, listing time determination, full recommendation generation, emoji mapping |
+| `test_leakage_awareness.py`     | Expanding-window aggregate leakage control, shift(1) validation                                                           |
 
-**All 63 tests pass** (pytest 9.0.3, Python 3.11, 4.18s runtime).
+**All 75 tests pass** (`pytest tests/unit/ -q`).
 
 Note: journal 0016 remains in the audit trail as a historical record of the gap being identified. This entry documents the gap being resolved. Per journal rules, existing entries are immutable — this new entry supersedes 0016's open status rather than modifying 0016.
 

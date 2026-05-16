@@ -275,7 +275,7 @@ def engineer_features(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def get_feature_columns() -> List[str]:
-    """Return raw feature names (31 pre-encoding; 46 post one-hot
+    """Return raw feature names (31 pre-encoding; 47 post one-hot
     encoding for categorical variables — what the trained model
     actually uses).
 
