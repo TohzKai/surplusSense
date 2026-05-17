@@ -158,6 +158,9 @@ workspaces/_template/
 
 # Phase 2 / historical marketplace exploration
 specs/
+
+# Internal backlog / working notes (not grading evidence)
+workspaces/SurplusSense/todos/backlog/
 ```
 
 ---
@@ -181,11 +184,16 @@ specs/
 python -m pytest tests/unit/ -q
 
 # Verify all Python files compile
-python -m py_compile app/streamlit_app.py src/feature_engineering.py src/train_model.py src/recommendation_engine.py src/food_safety_rules.py
+python -m compileall app src tests
+
+# Run model evaluation
+python src/evaluate_model.py
 
 # Check working tree is clean
 git status
 ```
+
+**Validation completed 2026-05-17.** Python compile check passed. pytest result: 75 passed. Model evaluation script completed successfully (XGBoost temporal holdout MAE = 0.6355). The clean submission ZIP was inspected and excludes .git, __pycache__, .pytest_cache, .env, .env.example, settings.local.json, and workspaces/SurplusSense/todos/backlog/.
 
 ---
 
@@ -231,7 +239,8 @@ zip -r SurplusSense_FINAL.zip \
      ".github/*" \
      "scripts/*" \
      "specs/*" \
-     "workspaces/_template/*"
+     "workspaces/_template/*" \
+     "workspaces/SurplusSense/todos/backlog/*"
 ```
 
 This produces `SurplusSense_FINAL.zip` containing only the assessment-relevant files.
@@ -256,6 +265,7 @@ docs/INDIVIDUAL_REPORT.md
 docs/DEVELOPER_HANDOVER.md
 docs/USER_GUIDE.md
 docs/EXECUTIVE_REPORT.md
+docs/ROADMAP.md
 COC_DECISION_LOG.md
 PILOT_VALIDATION_PLAN.md
 DEMO_SCRIPT.md
@@ -309,6 +319,9 @@ specs/
 
 # Templates
 workspaces/_template/
+
+# Internal backlog (working notes, not grading evidence)
+workspaces/SurplusSense/todos/backlog/
 ```
 
 ### Why

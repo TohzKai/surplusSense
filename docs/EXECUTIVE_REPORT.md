@@ -132,4 +132,25 @@ The commercial case does not require every surplus decision to generate large sa
 | Staff use dashboard daily            | Low-friction manual entry; no POS required in Phase 1 | Pilot observes daily active usage              | ≥ 4 sessions/week per outlet    |
 
 ---
+
+## 6. Pilot Validation Path
+
+Because all current evidence is from synthetic F&B data, SurplusSense should be evaluated through a structured merchant pilot before commercial deployment claims are made. The recommended pilot design is:
+
+- **Duration:** 4–6 weeks with 2–3 merchant outlets
+- **Data:** Connect daily sales, inventory, discount, donation, and disposal records from merchant POS and inventory systems
+- **Evaluation:** Compare SurplusSense recommendations against current merchant practice; track three success metrics:
+
+| Metric | Pilot target | Why it matters |
+|--------|-------------|----------------|
+| Forecast accuracy | Maintain or improve current MAE/RMSE on real merchant data | Confirms model transfers beyond synthetic data |
+| Avoidable surplus reduction | 10–15% reduction versus baseline | Demonstrates operational value |
+| Margin recovery | Positive monthly recovery after subscription cost | Tests buyer willingness to pay |
+
+The pilot keeps the product honest: the current submission demonstrates product feasibility, while the pilot would demonstrate commercial effectiveness.
+
+---
+
 _SurplusSense is a pilot-ready decision-support prototype. It is not SFA-validated, and not commercially live. All performance metrics are from synthetic data and require validation before commercial claims._
+
+**Source note:** Singapore generated 784,000 tonnes of food waste in 2024 according to NEA waste statistics. SurplusSense business impact estimates are derived from the project's synthetic pilot dataset and model outputs; they should be validated with merchant POS/inventory data before commercial rollout.

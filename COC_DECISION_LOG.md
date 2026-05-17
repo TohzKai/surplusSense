@@ -1,4 +1,4 @@
-# COC Decision Log: From 90-Minute Prototype to Market-Ready Product
+# COC Decision Log: From 90-Minute Prototype to Pilot-Ready Product
 
 **Project:** SurplusSense — AI Decision Intelligence for F&B Merchants
 **Assignment:** SMU MBA Machine Learning Individual Project
@@ -26,7 +26,7 @@ The weekly prototype had a clear ML pipeline but was not a product:
 - Cold-start problem unaddressed — what happens for a new merchant with no history?
 - Dashboard was a technical demo, not a decision-support interface
 
-**Why it was not market-ready:**
+**Why it was not pilot-ready:**
 A merchant looking at the prototype would see a prediction number with no recommended action, no safety guidance, and no recovery estimate. It answered "how much waste might occur" but not "what should I do about it."
 
 ---

@@ -4,95 +4,22 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "surplussense"
-version = "0.1.0"
-description = "Decision-support product for F&B merchant surplus management"  # SMU MBA ML Individual Project
-authors = [
-    {name = "Toh Zi Kai"}
-]
+version = "1.0.0"
+description = "Pilot-ready F&B surplus prediction and decision-support product for SMU MBA MGMT655."
+authors = [{name = "Toh Zi Kai"}]
 readme = "README.md"
-requires-python = ">=3.11"
-classifiers = [
-    "Development Status :: 3 - Alpha",
-    "Intended Audience :: Developers",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
-    "Programming Language :: Python :: 3.14",
-]
-dependencies = [
-    # Kailash SDK — all standard deps included in base install
-    "kailash>=2.13.0",
-    "kailash-mcp>=0.2.10",
-    "kailash-nexus>=2.5.0",
-    "kailash-dataflow>=2.6.0",
-    "kailash-kaizen>=2.14.0",
-    "kailash-pact>=0.11.0",
-    "kailash-ml>=0.9.0,<1.0",
-    "kaizen-agents>=0.9.4",
-    # Utilities
-    "rich>=13.0.0",
-    "python-dotenv>=1.0.0",
-    "structlog>=23.1.0",
-    "plotly>=5.0.0",
-]
+requires-python = ">=3.10"
 
 [project.optional-dependencies]
-ml = [
-    # PyTorch - On Windows, install separately: pip install torch --index-url https://download.pytorch.org/whl/cu118
-    "torch>=2.7.1",
-]
-align = [
-    "kailash-align>=0.3.1,<0.7.0",
-]
-all = [
-    "kailash-align[all]>=0.3.1,<0.7.0",
-]
 dev = [
-    # Testing (pytest>=7.2.0 removes vulnerable py dependency)
     "pytest>=7.2.0",
     "pytest-cov>=4.0",
-    "pytest-asyncio>=0.21.0",
-    # Linting & Formatting
-    "black>=23.0",
-    "isort>=5.12.0",
-    "ruff>=0.1.0",
-    "mypy>=1.0",
-    # Security & Pre-commit
-    "detect-secrets>=1.5.0",
-    "pre-commit>=4.2.0",
 ]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = ["ignore::DeprecationWarning"]
 
 [tool.setuptools.packages.find]
 where = ["."]
 exclude = ["tests*", ".*", "__pycache__*"]
-
-[tool.pytest.ini_options]
-asyncio_mode = "auto"
-asyncio_default_fixture_loop_scope = "function"
-testpaths = ["tests"]
-filterwarnings = [
-    "ignore::DeprecationWarning",
-]
-
-[tool.black]
-line-length = 100
-target-version = ["py311", "py312", "py313"]
-
-[tool.isort]
-profile = "black"
-line_length = 100
-
-[tool.ruff]
-line-length = 100
-target-version = "py311"
-
-[tool.ruff.lint]
-select = ["E", "F", "I", "UP", "B", "SIM"]
-ignore = ["E501"]
-
-[tool.mypy]
-python_version = "3.11"
-warn_return_any = true
-warn_unused_ignores = true
-ignore_missing_imports = true

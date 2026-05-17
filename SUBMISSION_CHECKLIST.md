@@ -85,8 +85,8 @@ Complete this checklist before submitting. All items must be verified.
 
 ## Final Verification
 
-- [ ] Run: `python -m pytest tests/unit -q` — all 75 tests pass
-- [ ] Run: `python -m py_compile app/streamlit_app.py` — no errors
-- [ ] Run: `python -m py_compile src/feature_engineering.py src/recommendation_engine.py src/food_safety_rules.py` — no errors
-- [ ] README.md is accurate and consistent with deliverables
-- [ ] No broken file references in any document
+- [x] `python -m pytest tests/unit/ -q` — **75 passed** (2026-05-17)
+- [x] `python -m compileall app src tests` — **all Python files compile cleanly** (2026-05-17)
+- [x] `python src/evaluate_model.py` — **completes successfully** (XGBoost MAE 0.6355, 2026-05-17)
+- [x] README.md is accurate and consistent with deliverables
+- [x] No broken file references in any document

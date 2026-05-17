@@ -50,3 +50,6 @@ Dockerfile
 
 # Session notes (per-session, not versioned)
 .session-notes
+
+# Internal backlog / working notes (not grading evidence)
+workspaces/SurplusSense/todos/backlog/

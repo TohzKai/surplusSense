@@ -254,7 +254,7 @@ python src/evaluate_model.py         # Official temporal holdout metrics
 
 ## 7. COC Decision Summary
 
-### From Prototype to Market-Ready Product
+### From Prototype to Pilot-Ready Product
 
 The weekly prototype predicted surplus with ML. The mature product converts that prediction into a merchant action — with safety gates, recovery estimates, and explainable recommendations.
 

@@ -4,6 +4,38 @@ A decision-support product that helps food merchants decide what to discount, do
 
 ---
 
+## Individual Assignment Grading Guide
+
+Primary grading artefacts for MGMT655 Individual Assignment:
+
+1. **Working product**: `app/streamlit_app.py`
+2. **Executive report, max 4 pages**: `docs/EXECUTIVE_REPORT.pdf`
+3. **COC decision log**: `COC_DECISION_LOG.md`
+4. **Test and model evidence**:
+   - `tests/unit/` — 75 passing unit tests
+   - `outputs/model_comparison.csv` — official temporal holdout metrics (XGBoost MAE 0.6355)
+   - `outputs/model_results.csv` — baseline comparison
+
+SurplusSense is a **pilot-ready decision-support cockpit** for F&B merchants. It is not merely a forecasting dashboard: the ML layer estimates surplus risk, while the business layer translates that risk into merchant actions such as hold, monitor, discount, deep-discount, donate, or discard. The product is designed for pilot validation before production deployment.
+
+**Supplementary artefact**: `docs/INDIVIDUAL_REPORT.pdf` is an extended stakeholder handover report for three audiences — business manager, app user, and fellow developer. The official executive report for grading is `docs/EXECUTIVE_REPORT.pdf`.
+
+---
+
+## Reproducible Setup
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python -m pytest tests/unit/ -q
+streamlit run app/streamlit_app.py
+```
+
+> **Note:** `pyproject.toml` is retained for project metadata only. The authoritative setup path is `pip install -r requirements.txt`.
+
+---
+
 ## For Grading — Start Here
 
 | File                             | Purpose                                                                         |
@@ -37,7 +69,7 @@ python -m pytest tests/unit/ -q
 
 ### Official Model Metric
 
-XGBoost temporal holdout MAE: **0.6355** (from `outputs/model_comparison.csv`). This is the primary metric — computed on the last 20% of dates, sorted chronologically. The model improves over the Historical Average baseline by **57%**.
+XGBoost temporal holdout MAE: **0.6355** (from `outputs/model_comparison.csv` — temporal holdout on last 20% of dates). The model improves over the Historical Average baseline by **57%**.
 
 ---
 
