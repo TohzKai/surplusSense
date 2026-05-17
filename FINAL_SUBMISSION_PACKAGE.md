@@ -18,7 +18,8 @@ The product combines XGBoost surplus prediction with deterministic recommendatio
 | MGMT655 Requirement            | Evidence File                                                             | Key Evidence                                                                                |
 | ------------------------------ | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
 | Working interactive product    | `app/streamlit_app.py`                                                    | Streamlit decision cockpit — run with `streamlit run app/streamlit_app.py`                  |
-| Executive report (max 4 pages) | `docs/EXECUTIVE_REPORT.md`                                                | 197 lines — problem, product, worked example, model results, business case                  |
+| Executive report (max 4 pages) | `docs/EXECUTIVE_REPORT.md`                                                | Official MGMT655 course outline report — problem, product, worked example, model results, business case |
+| Supplementary report (4–8 pages) | `docs/INDIVIDUAL_REPORT.md`                                            | Prof. Jack Hong's Telegram instruction — business manager, app user, developer handover     |
 | COC decision log               | `COC_DECISION_LOG.md`                                                     | 12 sections — prototype-to-product journey, rejected alternatives, human-judgment audit     |
 | Problem worth solving          | `docs/EXECUTIVE_REPORT.md` §1                                             | Merchant-side surplus decision at end of day                                                |
 | ML/AI depth                    | `src/train_model.py` + `src/feature_engineering.py`                       | XGBoost, 31 raw features → 47 model input columns, temporal 80/20 holdout, leakage-aware expanding-window aggregates |
@@ -82,10 +83,11 @@ SurplusSense uses **supervised machine learning** (XGBoost surplus prediction). 
 ## Quick Professor Review Path
 
 1. **Open the app** — `streamlit run app/streamlit_app.py`
-2. **Read the executive report** — `docs/EXECUTIVE_REPORT.md` (4 pages)
-3. **Review the decision log** — `COC_DECISION_LOG.md`
-4. **Check the self-assessment** — `workspaces/SurplusSense/04-validate/grading-self-assessment-v6-final.md`
-5. **Run the tests** — `pytest tests/unit/ -q` (75 passed)
+2. **Read the executive report** — `docs/EXECUTIVE_REPORT.md` (4 pages, official MGMT655 course outline requirement)
+3. **Read the individual report** — `docs/INDIVIDUAL_REPORT.md` (4–8 pages, Prof. Jack Hong's Telegram instruction)
+4. **Review the decision log** — `COC_DECISION_LOG.md`
+5. **Check the self-assessment** — `workspaces/SurplusSense/04-validate/grading-self-assessment-v6-final.md`
+6. **Run the tests** — `pytest tests/unit/ -q` (75 passed)
 
 ---
 
@@ -96,6 +98,7 @@ The following files constitute the final submission package:
 ```
 README.md
 docs/EXECUTIVE_REPORT.md
+docs/INDIVIDUAL_REPORT.md
 COC_DECISION_LOG.md
 PILOT_VALIDATION_PLAN.md
 DEMO_SCRIPT.md
@@ -205,6 +208,7 @@ From the repository root, run:
 zip -r SurplusSense_FINAL.zip \
   README.md \
   docs/EXECUTIVE_REPORT.md \
+  docs/INDIVIDUAL_REPORT.md \
   COC_DECISION_LOG.md \
   PILOT_VALIDATION_PLAN.md \
   DEMO_SCRIPT.md \

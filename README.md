@@ -9,7 +9,7 @@ A decision-support product that helps food merchants decide what to discount, do
 Primary grading artefacts for MGMT655 Individual Assignment:
 
 1. **Working product**: `app/streamlit_app.py`
-2. **Executive report, max 4 pages**: `docs/EXECUTIVE_REPORT.pdf`
+2. **Executive report, max 4 pages**: `docs/EXECUTIVE_REPORT.pdf` — official MGMT655 course outline requirement
 3. **COC decision log**: `COC_DECISION_LOG.md`
 4. **Test and model evidence**:
    - `tests/unit/` — 75 passing unit tests
@@ -18,7 +18,7 @@ Primary grading artefacts for MGMT655 Individual Assignment:
 
 SurplusSense is a **pilot-ready decision-support cockpit** for F&B merchants. It is not merely a forecasting dashboard: the ML layer estimates surplus risk, while the business layer translates that risk into merchant actions such as hold, monitor, discount, deep-discount, donate, or discard. The product is designed for pilot validation before production deployment.
 
-**Supplementary artefact**: `docs/INDIVIDUAL_REPORT.pdf` is an extended stakeholder handover report for three audiences — business manager, app user, and fellow developer. The official executive report for grading is `docs/EXECUTIVE_REPORT.pdf`.
+**Supplementary artefact**: `docs/INDIVIDUAL_REPORT.pdf` (4–8 pages) was prepared in response to Prof. Jack Hong's latest Telegram instruction, covering three audiences — business manager approving launch, app user, and fellow developer taking over the app. This is distinct from the official 4-page executive report above.
 
 ---
 
